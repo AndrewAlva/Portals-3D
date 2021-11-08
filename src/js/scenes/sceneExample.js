@@ -1,8 +1,8 @@
 import * as THREE from 'three'
-import testVertexShader from './shaders/test/vertex.glsl'
-import testFragmentShader from './shaders/test/fragment.glsl'
+import testVertexShader from './sceneExampleVertex.glsl'
+import testFragmentShader from './sceneExampleFragment.glsl'
 
-var Scene1 = {
+var SceneEx = {
     init: function() {
         var _this = this;
         _this.start();
@@ -14,9 +14,9 @@ var Scene1 = {
         /**
          * GUI
          */
-        const scene1debugger = window.Utils.gui.addFolder('Scene 1');
-        scene1debugger.open();
-        const scene1Controller = {};
+        const sceneExDebugger = window.Utils.gui.addFolder('Scene 1');
+        sceneExDebugger.open();
+        const sceneExController = {};
 
 
         /**
@@ -42,8 +42,8 @@ var Scene1 = {
             },
         });
 
-        scene1Controller.uRadius = scene1debugger.add(material.uniforms.uRadius, 'value').min(0.0001).max(0.45).step(0.0001).name('uRadius');
-        midiEvents.addEventListener('K1_change', updateRadius);
+        sceneExController.uRadius = sceneExDebugger.add(material.uniforms.uRadius, 'value').min(0.0001).max(0.45).step(0.0001).name('uRadius');
+        // midiEvents.addEventListener('K1_change', updateRadius);
 
 
         const mesh = new THREE.Mesh(geometry, material)
@@ -77,8 +77,8 @@ var Scene1 = {
          */
         function updateRadius(e) {
             let val = Math.range(e.velocity, 0, 127, 0.0001, 0.45);
-            scene1Controller.uRadius.object.value = val;
-            scene1Controller.uRadius.updateDisplay();
+            sceneExController.uRadius.object.value = val;
+            sceneExController.uRadius.updateDisplay();
 
         }
     }
@@ -88,4 +88,4 @@ var Scene1 = {
 
 
 
-export {Scene1};
+export {SceneEx};

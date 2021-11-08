@@ -7,7 +7,7 @@ import { MIDI } from './midi.js'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
-import { Scene1 } from './scene1.js';
+import { SceneEx } from './scenes/sceneExample.js';
 
 var App = {
     init: function() {
@@ -18,7 +18,7 @@ var App = {
     },
 
     start: function() {
-        Scene1.init();
+        SceneEx.init();
 
         /**
          * GUI
@@ -30,7 +30,7 @@ var App = {
         const canvas = document.querySelector('canvas.webgl')
 
         // Scene Manager
-        var scene = Scene1.scene;
+        var scene = SceneEx.scene;
 
 
         window.addEventListener('resize', () =>
@@ -74,7 +74,7 @@ var App = {
         }
 
         globalDebugger.add(Utils.debugger, 'toggleCamera');
-        midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
+        // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
 
         // Controls
         const controls = new OrbitControls(camera, canvas)

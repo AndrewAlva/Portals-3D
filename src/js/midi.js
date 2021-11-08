@@ -103,10 +103,15 @@ export class MIDI {
                 // // Test event subscription
                 // addTestListeners();
 
-                callback();
+                // callback(); // Disable when no MIDI available
 
             })
-            .catch(error => console.error({ error }));
+            .catch(error => {
+                console.error({ error });
+            })
+            .finally(_ => {
+                callback();
+            });
     }
 
 
