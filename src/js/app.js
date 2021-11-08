@@ -1,5 +1,8 @@
 import '../css/app.css'
 import './utils.js'
+import './events.js'
+
+import './midi.js'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
