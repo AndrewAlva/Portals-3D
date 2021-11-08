@@ -8,6 +8,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 import { SceneEx } from './scenes/sceneExample.js';
+import { Scene1 } from './scenes/scene1/scene1.js';
 
 var App = {
     init: function() {
@@ -18,7 +19,7 @@ var App = {
     },
 
     start: function() {
-        SceneEx.init();
+        Scene1.init();
 
         /**
          * GUI
@@ -30,7 +31,7 @@ var App = {
         const canvas = document.querySelector('canvas.webgl')
 
         // Scene Manager
-        var scene = SceneEx.scene;
+        var scene = Scene1.scene;
 
 
         window.addEventListener('resize', () =>
@@ -49,7 +50,7 @@ var App = {
          * Camera
          */
         const camera = new THREE.PerspectiveCamera(75, Utils.sizes.width / Utils.sizes.height)
-        camera.position.z = 3
+        camera.position.z = 2
         // scene.add(camera) // Apparently this isn't needed
 
         const frontCamera = {};
