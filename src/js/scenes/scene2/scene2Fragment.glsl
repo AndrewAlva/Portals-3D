@@ -11,10 +11,8 @@ void main() {
 
     float totalRipples = uRipples * 2.;
     float ripples = mod(circle * (totalRipples), 1.);
-    ripples = smoothstep(uThickness, uThickness + .02, ripples);
+    ripples = smoothstep(uThickness, uThickness + .005, ripples);
 
-    // vec4 color = vec4(circle);
-    // vec4 color = vec4(square1,square1,square1, 0.5);
     vec4 color = vec4(ripples);
 
     gl_FragColor = color;

@@ -9,6 +9,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 import { SceneEx } from './scenes/sceneExample.js';
 import { Scene1 } from './scenes/scene1/scene1.js';
+import { Scene2 } from './scenes/scene2/scene2.js';
 
 var App = {
     init: function() {
@@ -19,7 +20,8 @@ var App = {
     },
 
     start: function() {
-        Scene1.init();
+        // Scene1.init();
+        Scene2.init();
 
         /**
          * GUI
@@ -31,7 +33,8 @@ var App = {
         const canvas = document.querySelector('canvas.webgl')
 
         // Scene Manager
-        var scene = Scene1.scene;
+        // var scene = Scene1.scene;
+        var scene = Scene2.scene;
 
 
         window.addEventListener('resize', () =>
@@ -52,6 +55,7 @@ var App = {
         const camera = new THREE.PerspectiveCamera(75, Utils.sizes.width / Utils.sizes.height)
         camera.position.z = 2
         // scene.add(camera) // Apparently this isn't needed
+        window.cam = camera;
 
         const frontCamera = {};
         frontCamera.quaternion = new THREE.Quaternion().copy(camera.quaternion);
@@ -59,8 +63,8 @@ var App = {
         camera.currentPosition = 'frontCamera';
 
         const highAngleCamera = {};
-        highAngleCamera.quaternion = new THREE.Quaternion().setFromAxisAngle( new THREE.Vector3(0.3608, -0.1314, 0.8675), 0.3161);
-        highAngleCamera.pos = new THREE.Vector3(1.6286, 1.9301, -1.6192);
+        highAngleCamera.quaternion = new THREE.Quaternion().setFromAxisAngle( new THREE.Vector3(-0.1151, 0.881, 0.2778), 0.365);
+        highAngleCamera.pos = new THREE.Vector3(3.9486, 3.9486, -3.9486);
 
         Utils.debugger.toggleCamera = function() {
             if (camera.currentPosition == 'frontCamera') {
@@ -73,6 +77,7 @@ var App = {
                 camera.currentPosition = 'frontCamera';
             }
         }
+        Utils.debugger.toggleCamera();
 
         globalDebugger.add(Utils.debugger, 'toggleCamera');
         // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)

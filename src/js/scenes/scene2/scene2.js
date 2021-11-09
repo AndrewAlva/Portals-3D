@@ -1,8 +1,8 @@
 import * as THREE from 'three'
-import testVertexShader from './scene1Vertex.glsl'
-import testFragmentShader from './scene1Fragment.glsl'
+import testVertexShader from './scene2Vertex.glsl'
+import testFragmentShader from './scene2Fragment.glsl'
 
-var Scene1 = {
+var Scene2 = {
     init: function() {
         var _this = this;
         _this.start();
@@ -14,9 +14,9 @@ var Scene1 = {
         /**
          * GUI
          */
-        const scene1Debugger = window.Utils.gui.addFolder('Scene 1');
-        scene1Debugger.open();
-        const scene1Controller = {};
+        const scene2Debugger = window.Utils.gui.addFolder('Scene 1');
+        scene2Debugger.open();
+        const scene2Controller = {};
 
 
         /**
@@ -28,9 +28,9 @@ var Scene1 = {
         /**
          * Object
          */
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const geometry2 = new THREE.BoxGeometry(5, 5, 5)
-        const geometry3 = new THREE.BoxGeometry(25, 25, 25)
+        const geometry = new THREE.SphereGeometry(1, 128, 128)
+        const geometry2 = new THREE.SphereGeometry(5, 128, 128)
+        const geometry3 = new THREE.SphereGeometry(25, 128, 128)
         const material = new THREE.ShaderMaterial({
             vertexShader: testVertexShader,
             fragmentShader: testFragmentShader,
@@ -38,16 +38,16 @@ var Scene1 = {
             transparent: true,
             depthTest: false,
             uniforms: {
-                uThickness: { value: 0.85 },
-                uRipples: { value: 2 },
+                uThickness: { value: 0.9 },
+                uRipples: { value: 4 },
                 uAnimate: { value: 0 }
             },
         });
 
-        scene1Controller.uThickness = scene1Debugger.add(material.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
+        scene2Controller.uThickness = scene2Debugger.add(material.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
         // midiEvents.addEventListener('K1_change', updateThickness);
         
-        scene1Controller.uRipples = scene1Debugger.add(material.uniforms.uRipples, 'value').min(1).max(30).step(1).name('uRipples');
+        scene2Controller.uRipples = scene2Debugger.add(material.uniforms.uRipples, 'value').min(1).max(30).step(1).name('uRipples');
 
 
         const mesh = new THREE.Mesh(geometry, material)
@@ -57,7 +57,7 @@ var Scene1 = {
         _this.scene.add(mesh2)
         
         const mesh3 = new THREE.Mesh(geometry3, material)
-        _this.scene.add(mesh3)
+        // _this.scene.add(mesh3)
 
 
         /**
@@ -75,8 +75,10 @@ var Scene1 = {
         _this.scene.update = function() {
             let time = Utils.elapsedTime * 1;
 
-            let animate = time * 0.075;
+            let animate = time * 0.05;
             material.uniforms.uAnimate.value = animate;
+
+            // mesh2.rotation.y = time;
         }
 
 
@@ -85,8 +87,8 @@ var Scene1 = {
          */
         function updateThickness(e) {
             let val = Math.range(e.velocity, 0, 127, 0.00001, 0.95);
-            scene1Controller.uThickness.object.value = val;
-            scene1Controller.uThickness.updateDisplay();
+            scene2Controller.uThickness.object.value = val;
+            scene2Controller.uThickness.updateDisplay();
 
         }
     }
@@ -96,4 +98,4 @@ var Scene1 = {
 
 
 
-export {Scene1};
+export {Scene2};
