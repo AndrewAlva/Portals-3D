@@ -10,6 +10,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { SceneEx } from './scenes/sceneExample.js';
 import { Scene1 } from './scenes/scene1/scene1.js';
 import { Scene2 } from './scenes/scene2/scene2.js';
+import { Scene3 } from './scenes/scene3/scene3.js';
 
 var App = {
     init: function() {
@@ -21,7 +22,8 @@ var App = {
 
     start: function() {
         // Scene1.init();
-        Scene2.init();
+        // Scene2.init();
+        Scene3.init();
 
         /**
          * GUI
@@ -34,7 +36,8 @@ var App = {
 
         // Scene Manager
         // var scene = Scene1.scene;
-        var scene = Scene2.scene;
+        // var scene = Scene2.scene;
+        var scene = Scene3.scene;
 
 
         window.addEventListener('resize', () =>
