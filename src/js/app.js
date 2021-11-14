@@ -21,8 +21,8 @@ var App = {
     },
 
     start: function() {
-        // Scene1.init();
-        // Scene2.init();
+        Scene1.init();
+        Scene2.init();
         Scene3.init();
 
         /**
@@ -35,9 +35,9 @@ var App = {
         const canvas = document.querySelector('canvas.webgl')
 
         // Scene Manager
-        // var scene = Scene1.scene;
+        var scene = Scene1.scene;
         // var scene = Scene2.scene;
-        var scene = Scene3.scene;
+        // var scene = Scene3.scene;
 
 
         window.addEventListener('resize', () =>
@@ -80,7 +80,7 @@ var App = {
                 camera.currentPosition = 'frontCamera';
             }
         }
-        Utils.debugger.toggleCamera();
+        // Utils.debugger.toggleCamera();
 
         globalDebugger.add(Utils.debugger, 'toggleCamera');
         // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
