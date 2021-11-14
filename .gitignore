@@ -1,3 +1,6 @@
+# Copyright assets
+static/music
+
 # Logs
 logs
 *.log

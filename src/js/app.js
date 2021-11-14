@@ -4,6 +4,7 @@ import './utils.js'
 import './events.js'
 
 import { MIDI } from './midi.js'
+import { AudioController } from './AudioController.js'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
@@ -14,8 +15,13 @@ import { Scene3 } from './scenes/scene3/scene3.js';
 import { Scene4 } from './scenes/scene4/scene4.js';
 
 var App = {
-    init: function() {
+    init: async function() {
         var _this = this;
+
+        window.AC = new AudioController();
+        await AC.init({
+            // stream: true
+        });
 
         var midiControls = new MIDI();
         midiControls.init(_this.start);
@@ -83,7 +89,7 @@ var App = {
                 camera.currentPosition = 'frontCamera';
             }
         }
-        // Utils.debugger.toggleCamera();
+        Utils.debugger.toggleCamera();
 
         globalDebugger.add(Utils.debugger, 'toggleCamera');
         // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
@@ -115,6 +121,9 @@ var App = {
                 
             // Update controls
             controls.update()
+
+            // Update audio input
+            AC.analyserNode.getFloatFrequencyData(AC.frequencyData);
 
             //  Scene updatee
             scene.update();

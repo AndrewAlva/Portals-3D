@@ -17,3 +17,12 @@ body
     left: 0;
     outline: none;
 }
+
+audio{
+    position: absolute;
+    display: block;
+    margin: auto;
+    bottom: 20px;
+    left: 0; right: 0;
+    width: 94%;
+}

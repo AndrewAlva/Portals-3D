@@ -2,7 +2,11 @@ Math.map = Math.range = function(value, oldMin = -1, oldMax = 1, newMin = 0, new
     const newValue = (((value - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin;
     if (isClamp) return Math.clamp(newValue, Math.min(newMin, newMax), Math.max(newMin, newMax));
     return newValue;
-};
+}
+
+Math.clamp = function(num, min, max) {
+    return Math.min(Math.max(num, min), max);
+}
 
 Math.damp = function (a, b, lambda, dt) {
     return Math.lerp(a, b, 1 - Math.exp(-lambda * dt));
