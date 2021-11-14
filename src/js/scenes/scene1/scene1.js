@@ -15,7 +15,7 @@ var Scene1 = {
          * GUI
          */
         const scene1Debugger = window.Utils.gui.addFolder('Scene 1');
-        scene1Debugger.open();
+        // scene1Debugger.open();
         const scene1Controller = {};
 
 

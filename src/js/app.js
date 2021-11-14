@@ -11,6 +11,7 @@ import { SceneEx } from './scenes/sceneExample.js';
 import { Scene1 } from './scenes/scene1/scene1.js';
 import { Scene2 } from './scenes/scene2/scene2.js';
 import { Scene3 } from './scenes/scene3/scene3.js';
+import { Scene4 } from './scenes/scene4/scene4.js';
 
 var App = {
     init: function() {
@@ -24,6 +25,7 @@ var App = {
         Scene1.init();
         Scene2.init();
         Scene3.init();
+        Scene4.init();
 
         /**
          * GUI
@@ -35,9 +37,10 @@ var App = {
         const canvas = document.querySelector('canvas.webgl')
 
         // Scene Manager
-        var scene = Scene1.scene;
+        // var scene = Scene1.scene;
         // var scene = Scene2.scene;
         // var scene = Scene3.scene;
+        var scene = Scene4.scene;
 
 
         window.addEventListener('resize', () =>
@@ -107,20 +110,20 @@ var App = {
 
         const tick = () =>
         {
-        // Utils update
-        Utils.elapsedTime = clock.getElapsedTime();
-            
-        // Update controls
-        controls.update()
+            // Utils update
+            Utils.elapsedTime = clock.getElapsedTime();
+                
+            // Update controls
+            controls.update()
 
-        //  Scene updatee
-        scene.update();
-            
-        // Render
-        renderer.render(scene, camera)
+            //  Scene updatee
+            scene.update();
+                
+            // Render
+            renderer.render(scene, camera)
 
-        // Call tick again on the next frame
-        window.requestAnimationFrame(tick)
+            // Call tick again on the next frame
+            window.requestAnimationFrame(tick)
         }
 
         tick()
