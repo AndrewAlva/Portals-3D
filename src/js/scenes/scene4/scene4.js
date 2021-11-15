@@ -82,6 +82,7 @@ var Scene4 = {
          * Animations
          */
         let animate = 0;
+        let drumLerping = 0;
         _this.scene.update = function() {
             let time = Utils.elapsedTime;
 
@@ -93,13 +94,21 @@ var Scene4 = {
             animate += scene4Controller.currentSpeed * 0.1;
             material.uniforms.uAnimate.value = animate;
 
+            
             // Audio input
-            const drum = AC.audioSignal(AC.analyserNode, AC.frequencyData, 150, 2500);            
+            const drum = AC.audioSignal(AC.analyserNode, AC.frequencyData, 150, 2500);
+            drumLerping = Math.damp(
+                drumLerping,
+                drum,
+                0.01,
+                time
+            );
             const snare = AC.audioSignal(AC.analyserNode, AC.frequencyData, 1000, 1080);
-
+            // const snare = 1;
+            
             if (AC.state.playing) {
                 // Vertex updates
-                scene4Controller.uStrength.object.value = drum;
+                scene4Controller.uStrength.object.value = drumLerping;
                 scene4Controller.uStrength.updateDisplay();
 
 
