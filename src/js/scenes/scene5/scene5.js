@@ -1,23 +1,23 @@
 import * as THREE from 'three'
-import testVertexShader from './scene4Vertex.glsl'
-import testFragmentShader from './scene4Fragment.glsl'
+import testVertexShader from './scene5Vertex.glsl'
+import testFragmentShader from './scene5Fragment.glsl'
 
-var Scene4 = {
+var Scene5 = {
     init: function() {
         var _this = this;
 
         /**
          * GUI
          */
-        const scene4Debugger = window.Utils.gui.addFolder('Scene4');
-        // scene4Debugger.open();
-        const scene4Controller = {};
+        const scene5Debugger = window.Utils.gui.addFolder('Scene5');
+        scene5Debugger.open();
+        const scene5Controller = {};
 
         // Scene animation speed
-        scene4Controller.speed = scene4Controller.currentSpeed = 0.005
-        scene4Controller.lerpSpeed = 0.0001
-        scene4Debugger.add(scene4Controller, 'speed').min(0).max(1).step(0.001).name('Scene speed');
-        scene4Debugger.add(scene4Controller, 'lerpSpeed').min(0.0001).max(0.015).step(0.0001).name('Scene lerp speed');
+        scene5Controller.speed = scene5Controller.currentSpeed = 0.005
+        scene5Controller.lerpSpeed = 0.0001
+        scene5Debugger.add(scene5Controller, 'speed').min(0).max(1).step(0.001).name('Scene speed');
+        scene5Debugger.add(scene5Controller, 'lerpSpeed').min(0.0001).max(0.015).step(0.0001).name('Scene lerp speed');
 
 
         /**
@@ -29,7 +29,7 @@ var Scene4 = {
         /**
          * Object
          */
-        const geometry = new THREE.PlaneGeometry(1, 1, 300, 300)
+        const geometry = new THREE.BoxGeometry(1, 1, 1, 100, 100, 100)
         
         const material = new THREE.ShaderMaterial({
             vertexShader: testVertexShader,
@@ -41,21 +41,21 @@ var Scene4 = {
             uniforms: {
                 uDepth: { value: -15 },
                 uStrength: { value: 0 },
-                uThickness: { value: 0.5 },
+                uThickness: { value: 0.95 },
                 uRipples: { value: 1 },
                 uAnimate: { value: 0 },
                 uColor: { value: new THREE.Color('#ffffff') }
             },
         });
 
-        scene4Controller.uDepth = scene4Debugger.add(material.uniforms.uDepth, 'value').min(-15).max(15).step(0.001).name('uDepth');
-        scene4Controller.uStrength = scene4Debugger.add(material.uniforms.uStrength, 'value').min(0).max(1).step(0.00001).name('uStrength');
+        scene5Controller.uDepth = scene5Debugger.add(material.uniforms.uDepth, 'value').min(-15).max(15).step(0.001).name('uDepth');
+        scene5Controller.uStrength = scene5Debugger.add(material.uniforms.uStrength, 'value').min(0).max(1).step(0.00001).name('uStrength');
         ACEvents.addEventListener('AC_pause', updateStrength);
 
-        scene4Controller.uThickness = scene4Debugger.add(material.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
+        scene5Controller.uThickness = scene5Debugger.add(material.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
         // midiEvents.addEventListener('K1_change', updateThickness);
         
-        scene4Controller.uRipples = scene4Debugger.add(material.uniforms.uRipples, 'value').min(1).max(10).step(1).name('uRipples');
+        scene5Controller.uRipples = scene5Debugger.add(material.uniforms.uRipples, 'value').min(1).max(10).step(1).name('uRipples');
 
 
         const mesh = new THREE.Mesh(geometry, material)
@@ -79,12 +79,12 @@ var Scene4 = {
         _this.scene.update = function() {
             let time = Utils.elapsedTime;
 
-            scene4Controller.currentSpeed = Math.damp(
-                scene4Controller.currentSpeed,
-                scene4Controller.speed,
-                scene4Controller.lerpSpeed,
+            scene5Controller.currentSpeed = Math.damp(
+                scene5Controller.currentSpeed,
+                scene5Controller.speed,
+                scene5Controller.lerpSpeed,
                 time);
-            animate += scene4Controller.currentSpeed * 0.1;
+            animate += scene5Controller.currentSpeed * 0.1;
             material.uniforms.uAnimate.value = animate;
 
             
@@ -100,15 +100,15 @@ var Scene4 = {
             
             if (AC.state.playing) {
                 // Vertex updates
-                scene4Controller.uStrength.object.value = drumLerping;
-                scene4Controller.uStrength.updateDisplay();
+                scene5Controller.uStrength.object.value = drumLerping;
+                scene5Controller.uStrength.updateDisplay();
 
 
                 // Fragment updates
-                let ripples = scene4Controller.uRipples.__max * snare;
+                let ripples = scene5Controller.uRipples.__max * snare;
                 ripples = Math.max(1, ripples);
-                scene4Controller.uRipples.object.value = ripples;
-                scene4Controller.uRipples.updateDisplay();
+                scene5Controller.uRipples.object.value = ripples;
+                scene5Controller.uRipples.updateDisplay();
             }
         }
 
@@ -118,8 +118,8 @@ var Scene4 = {
          */
         function updateThickness(e) {
             let val = Math.range(e.velocity, 0, 127, 0.00001, 0.95);
-            scene4Controller.uThickness.object.value = val;
-            scene4Controller.uThickness.updateDisplay();
+            scene5Controller.uThickness.object.value = val;
+            scene5Controller.uThickness.updateDisplay();
 
         }
         
@@ -128,8 +128,8 @@ var Scene4 = {
          * Web Audio API Handlers
          */
         function updateStrength() {
-            scene4Controller.uStrength.object.value = 0;
-            scene4Controller.uStrength.updateDisplay();
+            scene5Controller.uStrength.object.value = 0;
+            scene5Controller.uStrength.updateDisplay();
         }
     }
 }
@@ -138,4 +138,4 @@ var Scene4 = {
 
 
 
-export {Scene4};
+export {Scene5};

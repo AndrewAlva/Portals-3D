@@ -5,16 +5,11 @@ import testFragmentShader from './scene2Fragment.glsl'
 var Scene2 = {
     init: function() {
         var _this = this;
-        _this.start();
-    },
-
-    start: function() {
-        var _this = this;
 
         /**
          * GUI
          */
-        const scene2Debugger = window.Utils.gui.addFolder('Scene 2');
+        const scene2Debugger = window.Utils.gui.addFolder('Scene2');
         // scene2Debugger.open();
         const scene2Controller = {};
 

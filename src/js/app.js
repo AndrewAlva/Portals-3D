@@ -13,6 +13,7 @@ import { Scene1 } from './scenes/scene1/scene1.js';
 import { Scene2 } from './scenes/scene2/scene2.js';
 import { Scene3 } from './scenes/scene3/scene3.js';
 import { Scene4 } from './scenes/scene4/scene4.js';
+import { Scene5 } from './scenes/scene5/scene5.js';
 
 var App = {
     init: async function() {
@@ -32,6 +33,7 @@ var App = {
         Scene2.init();
         Scene3.init();
         Scene4.init();
+        Scene5.init();
 
         /**
          * GUI
@@ -46,7 +48,8 @@ var App = {
         // var scene = Scene1.scene;
         // var scene = Scene2.scene;
         // var scene = Scene3.scene;
-        var scene = Scene4.scene;
+        // var scene = Scene4.scene;
+        var scene = Scene5.scene;
 
 
         window.addEventListener('resize', () =>
@@ -89,7 +92,7 @@ var App = {
                 camera.currentPosition = 'frontCamera';
             }
         }
-        Utils.debugger.toggleCamera();
+        // Utils.debugger.toggleCamera();
 
         globalDebugger.add(Utils.debugger, 'toggleCamera');
         // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
@@ -142,6 +145,8 @@ var App = {
 
 
 window.onload = function() {
-    App.init();
+    window.addEventListener('click', _ => {
+        App.init();
+    }, {once: true});
 }
  
