@@ -73,7 +73,12 @@ export class AudioController {
         var _this = this;
 
         _this.audio = document.createElement('audio');
-        _this.audio.src = '../music/triste.mp3';
+        // _this.audio.src = '../music/triste.mp3';
+        // _this.audio.src = '../music/beer.mp3';
+        // _this.audio.src = '../music/Just-Hold-On.mp3';
+        // _this.audio.src = '../music/checkmate.mp3';
+        _this.audio.src = '../music/peligro.mp3';
+        // _this.audio.src = '../music/turbulencia.mp3';
         _this.audio.crossOrigin = "Anonymous"; // To play audio through an external page (e.g. using CDN)
         _this.audio.loop = true;
         _this.audio.controls = true;
@@ -96,10 +101,12 @@ export class AudioController {
         // Get some higher resolution toward the low end
         _this.analyserNode.fftSize = 2048 * 2;
 
-        // These are the defaults but different tracks might
-        // need different values
+        // Defaults goes from -100 to -30 dB,
+        // but different tracks might need different values
+        // _this.analyserNode.minDecibels = -100;
+        // _this.analyserNode.maxDecibels = -30;
         _this.analyserNode.minDecibels = -100;
-        _this.analyserNode.maxDecibels = -30;
+        _this.analyserNode.maxDecibels = 0;
 
         _this.frequencyData = new Float32Array(_this.analyserNode.fftSize);
 

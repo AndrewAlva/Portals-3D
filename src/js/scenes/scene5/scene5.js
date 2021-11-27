@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import testVertexShader from './scene5Vertex.glsl'
-import testFragmentShader from './scene5Fragment.glsl'
+import sceneVertexShader from './scene5Vertex.glsl'
+import sceneFragmentShader from './scene5Fragment.glsl'
 
 var Scene5 = {
     init: function() {
@@ -10,7 +10,7 @@ var Scene5 = {
          * GUI
          */
         const scene5Debugger = window.Utils.gui.addFolder('Scene5');
-        scene5Debugger.open();
+        // scene5Debugger.open();
         const scene5Controller = {};
 
         // Scene animation speed
@@ -32,8 +32,8 @@ var Scene5 = {
         const geometry = new THREE.BoxGeometry(1, 1, 1, 100, 100, 100)
         
         const material = new THREE.ShaderMaterial({
-            vertexShader: testVertexShader,
-            fragmentShader: testFragmentShader,
+            vertexShader: sceneVertexShader,
+            fragmentShader: sceneFragmentShader,
             side: THREE.DoubleSide,
             transparent: true,
             depthTest: false,

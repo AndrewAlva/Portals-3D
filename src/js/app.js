@@ -14,6 +14,7 @@ import { Scene2 } from './scenes/scene2/scene2.js';
 import { Scene3 } from './scenes/scene3/scene3.js';
 import { Scene4 } from './scenes/scene4/scene4.js';
 import { Scene5 } from './scenes/scene5/scene5.js';
+import { Scene6 } from './scenes/scene6/scene6.js';
 
 var App = {
     init: async function() {
@@ -29,12 +30,6 @@ var App = {
     },
 
     start: function() {
-        Scene1.init();
-        Scene2.init();
-        Scene3.init();
-        Scene4.init();
-        Scene5.init();
-
         /**
          * GUI
          */
@@ -44,24 +39,34 @@ var App = {
         // Canvas
         const canvas = document.querySelector('canvas.webgl')
 
+
+        /**
+         * Renderer
+         */
+        window.renderer = new THREE.WebGLRenderer({
+            canvas: canvas
+        })
+        renderer.setSize(Utils.sizes.width, Utils.sizes.height)
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        
+
+        /**
+         * Scenes initializing
+         */
+        Scene1.init();
+        Scene2.init();
+        Scene3.init();
+        Scene4.init();
+        Scene5.init();
+        Scene6.init();
+
         // Scene Manager
         // var scene = Scene1.scene;
         // var scene = Scene2.scene;
         // var scene = Scene3.scene;
         // var scene = Scene4.scene;
-        var scene = Scene5.scene;
-
-
-        window.addEventListener('resize', () =>
-        {
-            // Update camera
-            camera.aspect = Utils.sizes.width / Utils.sizes.height
-            camera.updateProjectionMatrix()
-
-            // Update renderer
-            renderer.setSize(Utils.sizes.width, Utils.sizes.height)
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        })
+        // var scene = Scene5.scene;
+        var scene = Scene6.scene;
 
 
         /**
@@ -92,7 +97,7 @@ var App = {
                 camera.currentPosition = 'frontCamera';
             }
         }
-        // Utils.debugger.toggleCamera();
+        Utils.debugger.toggleCamera();
 
         globalDebugger.add(Utils.debugger, 'toggleCamera');
         // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
@@ -102,14 +107,17 @@ var App = {
         controls.enableDamping = true
 
 
-        /**
-         * Renderer
-         */
-        const renderer = new THREE.WebGLRenderer({
-            canvas: canvas
+        // Resizing
+        window.addEventListener('resize', () =>
+        {
+            // Update camera
+            camera.aspect = Utils.sizes.width / Utils.sizes.height
+            camera.updateProjectionMatrix()
+
+            // Update renderer
+            renderer.setSize(Utils.sizes.width, Utils.sizes.height)
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         })
-        renderer.setSize(Utils.sizes.width, Utils.sizes.height)
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 
         /**
