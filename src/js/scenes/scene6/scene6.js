@@ -81,10 +81,11 @@ const generateGalaxy = () => {
             uSize: { value: parameters.size * renderer.getPixelRatio() },
             uAnimate: { value: 0 },
 
-            uSpin: { value: 2 },
-            uBright: { value: 1 },
+            // uSpin: { value: 5.75 },
+            uSpin: { value: 0 },
+            uBright: { value: 0.7685 },
 
-            uDepth: { value: 0.1 },
+            uDepth: { value: 0.0472 },
             uStrength: { value: 1 },
             uThickness: { value: 0.95 },
         }
@@ -117,21 +118,25 @@ var Scene6 = {
         _this.controller = {};
 
         // Scene animation speed
-        _this.controller.speed = _this.controller.currentSpeed = 2.827
-        _this.controller.lerpSpeed = 0.0001
+        _this.controller.speed = _this.controller.currentSpeed = 0.3
+        _this.controller.lerpSpeed = 0.015
+        _this.controller.accelStrength = 5.55
+        _this.controller.accelLerp = 0.005
         _this.Debugger.add(_this.controller, 'speed').min(0).max(5).step(0.001).name('Scene speed');
         _this.Debugger.add(_this.controller, 'lerpSpeed').min(0.0001).max(0.015).step(0.0001).name('Scene lerp speed');
+        _this.Debugger.add(_this.controller, 'accelStrength').min(0).max(10).step(0.0001).name('Scene accel strength');
+        _this.Debugger.add(_this.controller, 'accelLerp').min(0.0001).max(0.015).step(0.0001).name('Scene accel lerp');
 
         // Galaxy params
         _this.controller.galaxy = {
-            count: 280300,
-            size: 50,
-            radius: 5,
-            branches: 2,
-            randomness: 1,
-            randomnessPower: 8,
-            insideColor: '#ff6600',
-            outsideColor: '#00ffff'
+            count: 820600,
+            size: 34,
+            radius: 6.05,
+            branches: 3,
+            randomness: 1.5,
+            randomnessPower: 6,
+            insideColor: '#ff8700',
+            outsideColor: '#257cf5'
         }
         _this.Debugger.add(_this.controller.galaxy, 'count').min(100).max(1000000).step(100).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'size').min(5).max(100).step(1).onFinishChange(generateGalaxy)
@@ -159,7 +164,7 @@ var Scene6 = {
          * Listeners
          * (MIDI, AudioAPI, etc.)
          */
-        ACEvents.addEventListener('AC_pause', updateSpin);
+        ACEvents.addEventListener('AC_pause', updateStrength);
         // midiEvents.addEventListener('K1_change', updateThickness);
         
 
@@ -177,20 +182,23 @@ var Scene6 = {
          * Animations
          */
         let animate = 0;
+        let basslineLerped = 0;
         let drumLerping = 0;
+
         _this.scene.update = function() {
             let time = Utils.elapsedTime;
-
-            _this.controller.currentSpeed = Math.damp(
-                _this.controller.currentSpeed,
-                _this.controller.speed,
-                _this.controller.lerpSpeed,
-                time);
-            animate += _this.controller.currentSpeed * 0.1;
-            galaxyMaterial.uniforms.uAnimate.value = animate;
-
             
             // Audio input
+            var bassline = AC.audioSignal(AC.analyserNode, AC.frequencyData, 20, 80);
+            bassline = Math.range(bassline, 0.7, 1, 0, 1, true);
+            basslineLerped = Math.damp(
+                basslineLerped,
+                bassline,
+                _this.controller.accelLerp,
+                time
+            );
+            window.bassline = basslineLerped;
+            
             const drum = AC.audioSignal(AC.analyserNode, AC.frequencyData, 100, 250);
             drumLerping = Math.damp(
                 drumLerping,
@@ -202,21 +210,28 @@ var Scene6 = {
             
             if (AC.state.playing) {
                 // Vertex updates
-                let drumRange = Math.range(drumLerping, 0.4, 0.6, 0, 1, true);
-                window.bassdrum = drumRange;
-                drumRange *= _this.controller.uSpin.__max;
-                _this.controller.uSpin.object.value = drumRange;
-                _this.controller.uSpin.updateDisplay();
 
 
                 // Fragment updates
-                let bright = Math.range(accordion, 0., 0.4, _this.controller.uBright.__min, _this.controller.uBright.__max, true);
+                let bright = Math.range(accordion, 0., 0.8, _this.controller.uBright.__min, _this.controller.uBright.__max, true);
                 _this.controller.uBright.object.value = bright;
                 _this.controller.uBright.updateDisplay();
                 
                 _this.controller.uStrength.object.value = accordion;
                 _this.controller.uStrength.updateDisplay();
             }
+
+            // Scene speed
+            // and acceleration
+            let accelPower = basslineLerped * _this.controller.accelStrength;
+            let speedAccelerated = _this.controller.speed + accelPower;
+            _this.controller.currentSpeed = Math.damp(
+                _this.controller.currentSpeed,
+                speedAccelerated,
+                _this.controller.lerpSpeed,
+                time);
+            animate += _this.controller.currentSpeed * 0.1;
+            galaxyMaterial.uniforms.uAnimate.value = animate;
         }
 
 
@@ -234,10 +249,7 @@ var Scene6 = {
         /**
          * Web Audio API Handlers
          */
-        function updateSpin() {
-            _this.controller.uSpin.object.value = 1;
-            _this.controller.uSpin.updateDisplay();
-            
+        function updateStrength() {
             _this.controller.uStrength.object.value = 0;
             _this.controller.uStrength.updateDisplay();
         }

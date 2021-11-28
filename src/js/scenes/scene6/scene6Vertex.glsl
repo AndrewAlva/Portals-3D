@@ -12,8 +12,6 @@ uniform float uDepth;
 uniform float uStrength;
 
 
-varying vec2 vUv;
-
 void main()
 {
     // Position

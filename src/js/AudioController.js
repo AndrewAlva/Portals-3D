@@ -106,7 +106,7 @@ export class AudioController {
         // _this.analyserNode.minDecibels = -100;
         // _this.analyserNode.maxDecibels = -30;
         _this.analyserNode.minDecibels = -100;
-        _this.analyserNode.maxDecibels = 0;
+        _this.analyserNode.maxDecibels = -30;
 
         _this.frequencyData = new Float32Array(_this.analyserNode.fftSize);
 

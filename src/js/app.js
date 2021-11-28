@@ -144,6 +144,9 @@ var App = {
 
             // Call tick again on the next frame
             window.requestAnimationFrame(tick)
+
+            // Save frame CCapture
+            capturer.capture( canvas );
         }
 
         tick()

@@ -18,4 +18,11 @@ import * as dat from 'dat.gui'
         Utils.sizes.height = window.innerHeight;
     });
 
+    window.capturer = new CCapture( {
+        framerate: 60,
+        verbose: true,
+        format: 'png',
+        timeLimit: 7
+    });
+
 }) ();
