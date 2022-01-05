@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import sceneVertexShader from './scene6Vertex.glsl'
-import sceneFragmentShader from './scene6Fragment.glsl'
+import sceneVertexShader from './scene7Vertex.glsl'
+import sceneFragmentShader from './scene7Fragment.glsl'
 
 var galaxyGeometry = null;
 var galaxyMaterial = null;
@@ -9,19 +9,19 @@ var galaxyPoints = null;
 const generateGalaxy = () => {
     if (galaxyPoints !== null) {
         
-        Scene6.Debugger.remove(Scene6.controller.uSpin);
-        Scene6.Debugger.remove(Scene6.controller.uBright);
+        Scene7.Debugger.remove(Scene7.controller.uSpin);
+        Scene7.Debugger.remove(Scene7.controller.uBright);
 
-        Scene6.Debugger.remove(Scene6.controller.uDepth);
-        Scene6.Debugger.remove(Scene6.controller.uStrength);
-        Scene6.Debugger.remove(Scene6.controller.uThickness);
+        Scene7.Debugger.remove(Scene7.controller.uDepth);
+        Scene7.Debugger.remove(Scene7.controller.uStrength);
+        Scene7.Debugger.remove(Scene7.controller.uThickness);
 
         galaxyGeometry.dispose();
         galaxyMaterial.dispose();
-        Scene6.scene.remove(galaxyPoints);
+        Scene7.scene.remove(galaxyPoints);
     }
 
-    const parameters = Scene6.controller.galaxy;
+    const parameters = Scene7.controller.galaxy;
 
     // Geometry
     galaxyGeometry = new THREE.BufferGeometry()
@@ -31,6 +31,7 @@ const generateGalaxy = () => {
     const randomness = new Float32Array(parameters.count * 3);
     const colors = new Float32Array(parameters.count * 3);
     const scales = new Float32Array(parameters.count);
+    const particleIndex = new Float32Array(parameters.count);
 
     const insideColor = new THREE.Color(parameters.insideColor);
     const outsideColor = new THREE.Color(parameters.outsideColor);
@@ -41,9 +42,9 @@ const generateGalaxy = () => {
         // Position
         const radius = Math.random() * parameters.radius;
         const branchAngle = ( (i % parameters.branches) / parameters.branches ) * (Math.PI * 2);
-        positions[i3    ] = Math.cos(branchAngle) * radius;
-        positions[i3 + 1] = 0;
-        positions[i3 + 2] = Math.sin(branchAngle) * radius;
+        positions[i3    ] = radius; // x
+        positions[i3 + 1] = 0; // y
+        positions[i3 + 2] = radius; // z
 
         // Randomness
         const randomX = Math.pow( Math.random(), parameters.randomnessPower ) * ( radius * parameters.randomness) * ( Math.random() < 0.5 ? 1 : -1 );
@@ -62,12 +63,16 @@ const generateGalaxy = () => {
 
         // Scale
         scales[i] = Math.random();
+        
+        // Index in array
+        particleIndex[i] = i;
     }
 
     galaxyGeometry.setAttribute( 'position', new THREE.BufferAttribute(positions, 3) );
     galaxyGeometry.setAttribute( 'aRandomness', new THREE.BufferAttribute(randomness, 3) );
     galaxyGeometry.setAttribute( 'color', new THREE.BufferAttribute(colors, 3) );
     galaxyGeometry.setAttribute( 'aScale', new THREE.BufferAttribute(scales, 1) );
+    galaxyGeometry.setAttribute( 'aIndex', new THREE.BufferAttribute(particleIndex, 1) );
 
 
     // Setup Material
@@ -78,43 +83,44 @@ const generateGalaxy = () => {
         vertexShader: sceneVertexShader,
         fragmentShader: sceneFragmentShader,
         uniforms: {
+            uTotal: { value: parameters.count },
             uSize: { value: parameters.size * renderer.getPixelRatio() },
             uAnimate: { value: 0 },
 
             // uSpin: { value: 5.75 },
             uSpin: { value: 0 },
-            uBright: { value: 0.7685 },
+            uBright: { value: 1.5 },
 
-            uDepth: { value: 0.0472 },
+            uDepth: { value: 0. },
             uStrength: { value: 1 },
             uThickness: { value: 0.95 },
         }
     });
 
-    Scene6.controller.uSpin = Scene6.Debugger.add(galaxyMaterial.uniforms.uSpin, 'value').min(-10).max(10).step(0.001).name('uSpin');
-    Scene6.controller.uBright = Scene6.Debugger.add(galaxyMaterial.uniforms.uBright, 'value').min(0.3).max(1.5).step(0.00001).name('uBright');
+    Scene7.controller.uSpin = Scene7.Debugger.add(galaxyMaterial.uniforms.uSpin, 'value').min(-10).max(10).step(0.001).name('uSpin');
+    Scene7.controller.uBright = Scene7.Debugger.add(galaxyMaterial.uniforms.uBright, 'value').min(0.3).max(1.5).step(0.00001).name('uBright');
     
-    Scene6.controller.uDepth = Scene6.Debugger.add(galaxyMaterial.uniforms.uDepth, 'value').min(-2).max(2).step(0.00001).name('uDepth');
-    Scene6.controller.uStrength = Scene6.Debugger.add(galaxyMaterial.uniforms.uStrength, 'value').min(0).max(1).step(0.00001).name('uStrength');
-    Scene6.controller.uThickness = Scene6.Debugger.add(galaxyMaterial.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
+    Scene7.controller.uDepth = Scene7.Debugger.add(galaxyMaterial.uniforms.uDepth, 'value').min(-20).max(20).step(0.00001).name('uDepth');
+    Scene7.controller.uStrength = Scene7.Debugger.add(galaxyMaterial.uniforms.uStrength, 'value').min(0).max(1).step(0.00001).name('uStrength');
+    Scene7.controller.uThickness = Scene7.Debugger.add(galaxyMaterial.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
 
 
     // Combine geometry & material into a 3D object
     galaxyPoints = new THREE.Points(galaxyGeometry, galaxyMaterial);
-    Scene6.scene.add(galaxyPoints);
+    Scene7.scene.add(galaxyPoints);
 }
 
 
 
-var Scene6 = {
+var Scene7 = {
     init: function() {
         var _this = this;
 
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('Scene6');
-        // _this.Debugger.open();
+        _this.Debugger = window.Utils.gui.addFolder('Scene7');
+        _this.Debugger.open();
         _this.controller = {};
 
         // Scene animation speed
@@ -129,14 +135,14 @@ var Scene6 = {
 
         // Galaxy params
         _this.controller.galaxy = {
-            count: 820600,
-            size: 34,
+            count: 100000,
+            size: 50,
             radius: 6.05,
             branches: 3,
             randomness: 1.5,
             randomnessPower: 6,
-            insideColor: '#ff8700',
-            outsideColor: '#257cf5'
+            outsideColor: '#ff8700',
+            insideColor: '#cc76ff'
         }
         _this.Debugger.add(_this.controller.galaxy, 'count').min(100).max(1000000).step(100).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'size').min(5).max(100).step(1).onFinishChange(generateGalaxy)
@@ -260,4 +266,4 @@ var Scene6 = {
 
 
 
-export {Scene6};
+export {Scene7};

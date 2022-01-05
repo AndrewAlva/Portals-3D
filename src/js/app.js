@@ -15,6 +15,7 @@ import { Scene3 } from './scenes/scene3/scene3.js';
 import { Scene4 } from './scenes/scene4/scene4.js';
 import { Scene5 } from './scenes/scene5/scene5.js';
 import { Scene6 } from './scenes/scene6/scene6.js';
+import { Scene7 } from './scenes/scene7/scene7.js';
 
 var App = {
     init: async function() {
@@ -59,6 +60,7 @@ var App = {
         Scene4.init();
         Scene5.init();
         Scene6.init();
+        Scene7.init();
 
         // Scene Manager
         // var scene = Scene1.scene;
@@ -66,7 +68,8 @@ var App = {
         // var scene = Scene3.scene;
         // var scene = Scene4.scene;
         // var scene = Scene5.scene;
-        var scene = Scene6.scene;
+        // var scene = Scene6.scene;
+        var scene = Scene7.scene;
 
 
         /**
