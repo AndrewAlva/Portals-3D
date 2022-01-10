@@ -36,8 +36,13 @@ void main()
     float angle = (PI2 / uTotal) * aIndex;
     float polygonRadius = geomRadius(angle, vertexCount);
 
+        // New global spinning
+        float rotation = (uAnimate * 0.175);
+        angle += rotation;
+
     modelPosition.x = sin(angle) * distanceToCenter * polygonRadius;
     modelPosition.z = cos(angle) * distanceToCenter * polygonRadius;
+
 
     // // Spin
     // float angle = atan(modelPosition.x, modelPosition.z);
@@ -51,7 +56,9 @@ void main()
     // modelPosition.x = cos(angle) * distanceToCenter;
     // modelPosition.z = sin(angle) * distanceToCenter;
 
-    // // Apply randomness
+    // Apply randomness
+    vec3 intervalRandomness = max(0.01, sin(uAnimate * 0.7)) * aRandomness;
+    modelPosition.xyz += intervalRandomness;
     // modelPosition.xyz += aRandomness;
     
     // Apply height variation

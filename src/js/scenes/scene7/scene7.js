@@ -88,12 +88,12 @@ const generateGalaxy = () => {
             uAnimate: { value: 0 },
 
             // uSpin: { value: 5.75 },
-            uSpin: { value: 0 },
-            uBright: { value: 1.5 },
+            uSpin: { value: Scene7.controller.uSpin?.object.value || 0 },
+            uBright: { value: Scene7.controller.uBright?.object.value || 1.12 },
 
-            uDepth: { value: 0. },
-            uStrength: { value: 1 },
-            uThickness: { value: 0.95 },
+            uDepth: { value: Scene7.controller.uDepth?.object.value || 0.031 },
+            uStrength: { value: Scene7.controller.uStrength?.object.value || 1 },
+            uThickness: { value: Scene7.controller.uThickness?.object.value || 0.95 },
         }
     });
 
@@ -124,7 +124,7 @@ var Scene7 = {
         _this.controller = {};
 
         // Scene animation speed
-        _this.controller.speed = _this.controller.currentSpeed = 0.3
+        _this.controller.speed = _this.controller.currentSpeed = 0.15
         _this.controller.lerpSpeed = 0.015
         _this.controller.accelStrength = 5.55
         _this.controller.accelLerp = 0.005
@@ -135,21 +135,21 @@ var Scene7 = {
 
         // Galaxy params
         _this.controller.galaxy = {
-            count: 100000,
-            size: 50,
+            count: 357500,
+            size: 65,
             radius: 6.05,
             branches: 3,
-            randomness: 1.5,
-            randomnessPower: 6,
-            outsideColor: '#ff8700',
-            insideColor: '#cc76ff'
+            randomness: 3,
+            randomnessPower: 1,
+            insideColor: '#750000',
+            outsideColor: '#ffffff',
         }
         _this.Debugger.add(_this.controller.galaxy, 'count').min(100).max(1000000).step(100).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'size').min(5).max(100).step(1).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'randomness').min(0).max(3).step(0.001).onFinishChange(generateGalaxy)
-        _this.Debugger.add(_this.controller.galaxy, 'randomnessPower').min(1).max(10).step(0.001).onFinishChange(generateGalaxy)
+        _this.Debugger.add(_this.controller.galaxy, 'randomnessPower').min(1).max(20).step(0.001).onFinishChange(generateGalaxy)
         _this.Debugger.addColor(_this.controller.galaxy, 'insideColor').onFinishChange(generateGalaxy)
         _this.Debugger.addColor(_this.controller.galaxy, 'outsideColor').onFinishChange(generateGalaxy)
 
