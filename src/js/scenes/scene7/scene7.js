@@ -9,12 +9,10 @@ var galaxyPoints = null;
 const generateGalaxy = () => {
     if (galaxyPoints !== null) {
         
-        Scene7.Debugger.remove(Scene7.controller.uSpin);
         Scene7.Debugger.remove(Scene7.controller.uBright);
 
         Scene7.Debugger.remove(Scene7.controller.uDepth);
         Scene7.Debugger.remove(Scene7.controller.uStrength);
-        Scene7.Debugger.remove(Scene7.controller.uThickness);
 
         galaxyGeometry.dispose();
         galaxyMaterial.dispose();
@@ -41,7 +39,6 @@ const generateGalaxy = () => {
 
         // Position
         const radius = Math.random() * parameters.radius;
-        const branchAngle = ( (i % parameters.branches) / parameters.branches ) * (Math.PI * 2);
         positions[i3    ] = radius; // x
         positions[i3 + 1] = 0; // y
         positions[i3 + 2] = radius; // z
@@ -85,24 +82,20 @@ const generateGalaxy = () => {
         uniforms: {
             uTotal: { value: parameters.count },
             uSize: { value: parameters.size * renderer.getPixelRatio() },
+            uSides: { value: parameters.sides },
             uAnimate: { value: 0 },
 
-            // uSpin: { value: 5.75 },
-            uSpin: { value: Scene7.controller.uSpin?.object.value || 0 },
             uBright: { value: Scene7.controller.uBright?.object.value || 1.12 },
 
             uDepth: { value: Scene7.controller.uDepth?.object.value || 0.031 },
             uStrength: { value: Scene7.controller.uStrength?.object.value || 1 },
-            uThickness: { value: Scene7.controller.uThickness?.object.value || 0.95 },
         }
     });
 
-    Scene7.controller.uSpin = Scene7.Debugger.add(galaxyMaterial.uniforms.uSpin, 'value').min(-10).max(10).step(0.001).name('uSpin');
     Scene7.controller.uBright = Scene7.Debugger.add(galaxyMaterial.uniforms.uBright, 'value').min(0.3).max(1.5).step(0.00001).name('uBright');
-    
+
     Scene7.controller.uDepth = Scene7.Debugger.add(galaxyMaterial.uniforms.uDepth, 'value').min(-20).max(20).step(0.00001).name('uDepth');
     Scene7.controller.uStrength = Scene7.Debugger.add(galaxyMaterial.uniforms.uStrength, 'value').min(0).max(1).step(0.00001).name('uStrength');
-    Scene7.controller.uThickness = Scene7.Debugger.add(galaxyMaterial.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
 
 
     // Combine geometry & material into a 3D object
@@ -138,7 +131,7 @@ var Scene7 = {
             count: 357500,
             size: 65,
             radius: 6.05,
-            branches: 3,
+            sides: 4,
             randomness: 3,
             randomnessPower: 1,
             insideColor: '#750000',
@@ -147,7 +140,7 @@ var Scene7 = {
         _this.Debugger.add(_this.controller.galaxy, 'count').min(100).max(1000000).step(100).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'size').min(5).max(100).step(1).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
-        _this.Debugger.add(_this.controller.galaxy, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
+        _this.Debugger.add(_this.controller.galaxy, 'sides').min(3).max(20).step(1).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'randomness').min(0).max(3).step(0.001).onFinishChange(generateGalaxy)
         _this.Debugger.add(_this.controller.galaxy, 'randomnessPower').min(1).max(20).step(0.001).onFinishChange(generateGalaxy)
         _this.Debugger.addColor(_this.controller.galaxy, 'insideColor').onFinishChange(generateGalaxy)
@@ -171,7 +164,6 @@ var Scene7 = {
          * (MIDI, AudioAPI, etc.)
          */
         ACEvents.addEventListener('AC_pause', updateStrength);
-        // midiEvents.addEventListener('K1_change', updateThickness);
         
 
 
@@ -238,17 +230,6 @@ var Scene7 = {
                 time);
             animate += _this.controller.currentSpeed * 0.1;
             galaxyMaterial.uniforms.uAnimate.value = animate;
-        }
-
-
-        /**
-         * MIDI Handlers
-         */
-        function updateThickness(e) {
-            let val = Math.range(e.velocity, 0, 127, 0.00001, 0.95);
-            _this.controller.uThickness.object.value = val;
-            _this.controller.uThickness.updateDisplay();
-
         }
         
         

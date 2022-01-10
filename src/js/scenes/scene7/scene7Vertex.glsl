@@ -7,11 +7,11 @@ attribute vec3 aRandomness;
 
 uniform float uTotal;
 uniform float uSize;
+uniform float uSides;
 uniform float uAnimate;
 
 varying vec3 vColor;
 
-uniform float uSpin;
 uniform float uDepth;
 
 uniform float uStrength;
@@ -31,7 +31,7 @@ void main()
     float distanceToCenter = length(modelPosition.xz);
 
     // Polygon sides
-    float vertexCount = 4.;
+    float vertexCount = uSides;
     
     float angle = (PI2 / uTotal) * aIndex;
     float polygonRadius = geomRadius(angle, vertexCount);
@@ -43,26 +43,11 @@ void main()
     modelPosition.x = sin(angle) * distanceToCenter * polygonRadius;
     modelPosition.z = cos(angle) * distanceToCenter * polygonRadius;
 
-
-    // // Spin
-    // float angle = atan(modelPosition.x, modelPosition.z);
-    // float distanceToCenter = length(modelPosition.xz);
-    // // float angleOffset = (1. / distanceToCenter) * (uAnimate * 0.2);
-    // float angleOffset = (1. / distanceToCenter) * uSpin;
-    // float rotation = (uAnimate * 0.2);
-    // angle += angleOffset + rotation;
-
-    // // Apply spin
-    // modelPosition.x = cos(angle) * distanceToCenter;
-    // modelPosition.z = sin(angle) * distanceToCenter;
-
     // Apply randomness
     vec3 intervalRandomness = max(0.01, sin(uAnimate * 0.7)) * aRandomness;
     modelPosition.xyz += intervalRandomness;
-    // modelPosition.xyz += aRandomness;
     
     // Apply height variation
-    // modelPosition.y += (1. / distanceToCenter) * uDepth;
     float yJump = (10. / distanceToCenter) * uDepth;
     yJump *= uStrength;
     
