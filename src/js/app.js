@@ -16,6 +16,7 @@ import { Scene4 } from './scenes/scene4/scene4.js';
 import { Scene5 } from './scenes/scene5/scene5.js';
 import { Scene6 } from './scenes/scene6/scene6.js';
 import { Scene7 } from './scenes/scene7/scene7.js';
+import { Scene8 } from './scenes/scene8/scene8.js';
 
 var App = {
     init: async function() {
@@ -61,6 +62,7 @@ var App = {
         Scene5.init();
         Scene6.init();
         Scene7.init();
+        Scene8.init();
 
         // Scene Manager
         // var scene = Scene1.scene;
@@ -69,7 +71,8 @@ var App = {
         // var scene = Scene4.scene;
         // var scene = Scene5.scene;
         // var scene = Scene6.scene;
-        var scene = Scene7.scene;
+        // var scene = Scene7.scene;
+        var scene = Scene8.scene;
 
 
         /**
@@ -100,7 +103,7 @@ var App = {
                 camera.currentPosition = 'frontCamera';
             }
         }
-        Utils.debugger.toggleCamera();
+        // Utils.debugger.toggleCamera();
 
         globalDebugger.add(Utils.debugger, 'toggleCamera');
         // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
