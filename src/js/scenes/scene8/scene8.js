@@ -27,6 +27,8 @@ var Scene8 = {
         _this.textureLoader = new THREE.TextureLoader(_this.loadingManager)
         _this.texture1 = _this.textureLoader.load('/img/map1.jpg')
         _this.texture2 = _this.textureLoader.load('/img/map2.jpg')
+        // _this.levelMask = _this.textureLoader.load('/img/levelMask.jpg')
+        _this.levelMask = _this.textureLoader.load('/img/levelMask-rgb.jpg')
 
 
         /**
@@ -50,18 +52,19 @@ var Scene8 = {
             uniforms: {
                 tMap1: { value: _this.texture1 },
                 tMap2: { value: _this.texture2 },
+                tLevel: { value: _this.levelMask },
                 uMixer: { value: 0.5 },
 
                 uAnimate: { value: 0 },
 
-                uProgress: { value: 0 },
+                uProgress: { value: 2 },
             },
         });
 
         _this.controller.uMixer = _this.Debugger.add(material.uniforms.uMixer, 'value').min(0).max(1).step(0.00001).name('uMixer');
         ACEvents.addEventListener('AC_pause', updateMixer);
 
-        _this.controller.uProgress = _this.Debugger.add(material.uniforms.uProgress, 'value').min(0).max(1).step(0.00001).name('uProgress');
+        _this.controller.uProgress = _this.Debugger.add(material.uniforms.uProgress, 'value').min(0).max(2.2).step(0.00001).name('uProgress');
         // midiEvents.addEventListener('K1_change', updateProgress);
 
 
