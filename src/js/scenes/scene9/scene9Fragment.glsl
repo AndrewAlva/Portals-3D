@@ -11,7 +11,6 @@ varying vec2 vUv;
 #pragma glslify: animateLevels = require('../../shaders/modules/levelmask.glsl')
 
 
-// Fragment
 void main() {
     float strength = uMixer * uProgress;
 	vec4 tex1 = texture2D(tMap1, vUv);
