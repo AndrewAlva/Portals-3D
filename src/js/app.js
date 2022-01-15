@@ -169,4 +169,3 @@ window.onload = function() {
         App.init();
     }, {once: true});
 }
- 

@@ -42,7 +42,8 @@ var Scene9 = {
         /**
          * Object
          */
-        const geometry = new THREE.PlaneGeometry(1.778, 1, 300, 300)
+        let planeSize = new THREE.Vector2(1.778, 1);
+        const geometry = new THREE.PlaneGeometry(planeSize.x, planeSize.y, 300, 300)
         
         const material = new THREE.ShaderMaterial({
             vertexShader: testVertexShader,
@@ -52,16 +53,24 @@ var Scene9 = {
             depthTest: false,
             blending: THREE.AdditiveBlending,
             uniforms: {
+                uSize: { value: planeSize },
+                uRipples: { value: 48 },
+                uRipplesAccel: { value: 1 },
+                uRipplesExpansion: { value: 0.1 },
                 tMap1: { value: _this.texture1 },
                 tMap2: { value: _this.texture2 },
                 tLevel: { value: _this.levelMask },
-                uMixer: { value: 0.5 },
+                uMixer: { value: 0.75 },
 
                 uAnimate: { value: 0 },
 
-                uProgress: { value: 2 },
+                uProgress: { value: 0.6 },
             },
         });
+
+        _this.controller.uRipples = _this.Debugger.add(material.uniforms.uRipples, 'value').min(0).max(100).step(0.001).name('uRipples');
+        _this.controller.uRipplesAccel = _this.Debugger.add(material.uniforms.uRipplesAccel, 'value').min(1).max(10).step(0.001).name('uRipplesAccel');
+        _this.controller.uRipplesExpansion = _this.Debugger.add(material.uniforms.uRipplesExpansion, 'value').min(0).max(1).step(0.00001).name('uRipplesExpansion');
 
         _this.controller.uMixer = _this.Debugger.add(material.uniforms.uMixer, 'value').min(0).max(1).step(0.00001).name('uMixer');
         ACEvents.addEventListener('AC_pause', updateMixer);
