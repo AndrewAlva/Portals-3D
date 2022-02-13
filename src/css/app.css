@@ -26,3 +26,8 @@ audio{
     left: 0; right: 0;
     width: 94%;
 }
+
+#VRButton{
+    top: 20px !important;
+    bottom: auto !important;
+}

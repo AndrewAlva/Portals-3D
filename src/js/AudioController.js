@@ -74,12 +74,12 @@ export class AudioController {
 
         _this.audio = document.createElement('audio');
 
-        // _this.audio.src = '../music/triste.mp3';
-        // _this.audio.src = '../music/beer.mp3';
-        // _this.audio.src = '../music/Just-Hold-On.mp3';
-        // _this.audio.src = '../music/checkmate.mp3';
-        _this.audio.src = '../music/peligro.mp3';
-        // _this.audio.src = '../music/turbulencia.mp3';
+        // _this.audio.src = 'music/triste.mp3';
+        // _this.audio.src = 'music/beer.mp3';
+        // _this.audio.src = 'music/Just-Hold-On.mp3';
+        // _this.audio.src = 'music/checkmate.mp3';
+        _this.audio.src = 'music/peligro.mp3';
+        // _this.audio.src = 'music/turbulencia.mp3';
 
         _this.audio.crossOrigin = "Anonymous"; // To play audio through an external page (e.g. using CDN)
         _this.audio.loop = true;

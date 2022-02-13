@@ -7,6 +7,7 @@ import { MIDI } from './midi.js'
 import { AudioController } from './AudioController.js'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js'
 
 import { SceneEx } from './scenes/sceneExample.js';
 import { Scene1 } from './scenes/scene1/scene1.js';
@@ -20,7 +21,7 @@ import { Scene8 } from './scenes/scene8/scene8.js';
 import { Scene9 } from './scenes/scene9/scene9.js';
 
 var App = {
-    init: async function() {
+    init: async function({ enableVR = false } = {}) {
         var _this = this;
 
         window.AC = new AudioController();
@@ -28,11 +29,14 @@ var App = {
             // stream: true
         });
 
-        var midiControls = new MIDI();
-        midiControls.init(_this.start);
+        let midiControls = new MIDI();
+        let midiPromise = midiControls.init();
+        midiPromise.finally(_ => {
+            _this.start({enableVR});
+        })
     },
 
-    start: function() {
+    start: function({enableVR}) {
         /**
          * GUI
          */
@@ -152,20 +156,34 @@ var App = {
             renderer.render(scene, camera)
 
             // Call tick again on the next frame
-            window.requestAnimationFrame(tick)
+            if (!renderer.xr.enabled) {
+                window.requestAnimationFrame(tick)
+            }
 
             // Save frame CCapture
             capturer.capture( canvas );
         }
 
-        tick()
-    }
+        
+        /**
+         * Init VR
+         */
+        if (enableVR) {
+            document.body.appendChild( VRButton.createButton( window.renderer ) );
+            window.renderer.xr.enabled = true;
+            window.renderer.setAnimationLoop(tick);
+        }
+
+        tick();
+    },
 }
 
 
 
 window.onload = function() {
     window.addEventListener('click', _ => {
-        App.init();
+        App.init({
+            enableVR: true
+        });
     }, {once: true});
 }
