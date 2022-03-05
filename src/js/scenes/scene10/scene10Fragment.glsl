@@ -7,7 +7,7 @@ uniform float uAnimate;
 
 varying vec2 vUv;
 
-#pragma glslify: rangeF = require('../shaders/modules/rangeF.glsl')
+#pragma glslify: rangeF = require('../../shaders/modules/rangeF.glsl')
 
 
 void main() {
@@ -34,6 +34,6 @@ void main() {
     vec3 color = vec3(ripples);
     float alpha = uProgress;
 
-
+    
     gl_FragColor = vec4(color, alpha);
 }

@@ -1,16 +1,16 @@
 import * as THREE from 'three'
-import sceneVertex from './SceneExampleVertex.glsl'
-import sceneFragment from './SceneExampleFragment.glsl'
+import sceneVertex from './scene10Vertex.glsl'
+import sceneFragment from './scene10Fragment.glsl'
 
-var SceneEx = {
+var Scene10 = {
     init: function() {
         var _this = this;
 
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('SceneEx');
-        // _this.Debugger.open();
+        _this.Debugger = window.Utils.gui.addFolder('Scene10');
+        _this.Debugger.open();
         _this.controller = {};
 
         // Scene animation speed
@@ -138,4 +138,4 @@ var SceneEx = {
 
 
 
-export {SceneEx};
+export {Scene10};

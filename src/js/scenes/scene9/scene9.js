@@ -10,7 +10,7 @@ var Scene9 = {
          * GUI
          */
         _this.Debugger = window.Utils.gui.addFolder('Scene9');
-        _this.Debugger.open();
+        // _this.Debugger.open();
         _this.controller = {};
 
         // Scene animation speed

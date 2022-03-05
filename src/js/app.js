@@ -19,6 +19,7 @@ import { Scene6 } from './scenes/scene6/scene6.js';
 import { Scene7 } from './scenes/scene7/scene7.js';
 import { Scene8 } from './scenes/scene8/scene8.js';
 import { Scene9 } from './scenes/scene9/scene9.js';
+import { Scene10 } from './scenes/scene10/scene10.js';
 
 var App = {
     init: async function({ enableVR = false } = {}) {
@@ -60,6 +61,7 @@ var App = {
         /**
          * Scenes initializing
          */
+        SceneEx.init();
         Scene1.init();
         Scene2.init();
         Scene3.init();
@@ -69,8 +71,10 @@ var App = {
         Scene7.init();
         Scene8.init();
         Scene9.init();
+        Scene10.init();
 
         // Scene Manager
+        // var scene = SceneEx.scene;
         // var scene = Scene1.scene;
         // var scene = Scene2.scene;
         // var scene = Scene3.scene;
@@ -79,7 +83,8 @@ var App = {
         // var scene = Scene6.scene;
         // var scene = Scene7.scene;
         // var scene = Scene8.scene;
-        var scene = Scene9.scene;
+        // var scene = Scene9.scene;
+        var scene = Scene10.scene;
 
 
         /**
@@ -138,8 +143,12 @@ var App = {
          */
         const clock = new THREE.Clock();
 
-        const tick = () =>
+        const tick = (e) =>
         {
+            /* PETE FEEDBACK to review */
+            // Grab poses from 'e', or by 'window.renderer.xr'
+            // check documentation
+
             // Utils update
             Utils.elapsedTime = clock.getElapsedTime();
                 
@@ -172,6 +181,11 @@ var App = {
             document.body.appendChild( VRButton.createButton( window.renderer ) );
             window.renderer.xr.enabled = true;
             window.renderer.setAnimationLoop(tick);
+
+            /* PETE FEEDBACK to review */
+            window.renderer.xr.addEventListener('sessionstart', (e) => {
+                console.log(e.camera);
+            });
         }
 
         tick();
@@ -187,3 +201,6 @@ window.onload = function() {
         });
     }, {once: true});
 }
+
+
+// chrome flags: xr mode
