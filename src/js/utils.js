@@ -1,23 +1,64 @@
 import * as dat from 'dat.gui'
 
+window.debounce = function(fn, delay) {
+    let timerId;
+    return function(...args) {
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+        timerId = setTimeout(() => {
+            fn(...args);
+            timerId = null;
+        }, delay);
+    }
+}
+
+window.throttle = function(fn, delay) {
+    let lastCall = 0;
+    return function(...args) {
+        const now = (new Date).getTime();
+        if (now - lastCall < delay) {
+            return;
+        }
+        lastCall = now;
+        return fn(...args);
+    }
+}
+
 (function () {
     window.Utils = {};
 
-    window.Utils.gui = new dat.GUI();
+    //////* GUI aka. Debugger *//////
+    Utils.gui = new dat.GUI();
     // dat.GUI.toggleHide();
-    window.Utils.debugger = {};
+    Utils.debugger = {};
 
-    window.Utils.sizes = {
-        width: window.innerWidth,
-        height: window.innerHeight
-    };
+    Utils.resizeCallbacks = [];
 
-    window.addEventListener('resize', () => {
-        // Update sizes
-        Utils.sizes.width = window.innerWidth;
-        Utils.sizes.height = window.innerHeight;
-    });
 
+
+    //////* Resizing setup *//////
+    function handleResize() {
+        Utils.resizeCallbacks.forEach(cb => { cb() });
+    }
+
+    window.addEventListener( 'resize', debounce(handleResize, 100) );
+
+
+
+    //////* Screen size *//////
+    Utils.screenSize = {};
+
+    function updateWindowSize() {
+        Utils.screenSize.width = window.innerWidth;
+        Utils.screenSize.height = window.innerHeight;
+    }
+    updateWindowSize();
+    Utils.resizeCallbacks.push(updateWindowSize);
+
+
+
+    //////* Miscellaneous *//////
     window.capturer = new CCapture( {
         framerate: 60,
         verbose: true,

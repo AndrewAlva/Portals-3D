@@ -14,7 +14,7 @@ var Scene10 = {
         _this.controller = {};
 
         // Scene animation speed
-        _this.controller.speed = _this.controller.currentSpeed = 0.5
+        _this.controller.speed = _this.controller.currentSpeed = 0.05
         _this.controller.lerpSpeed = 0.0001
         _this.Debugger.add(_this.controller, 'speed').min(0).max(1).step(0.001).name('Scene speed');
         _this.Debugger.add(_this.controller, 'lerpSpeed').min(0.0001).max(0.015).step(0.0001).name('Scene lerp speed');
@@ -37,41 +37,54 @@ var Scene10 = {
         /**
          * Object
          */
-        let planeSize = new THREE.Vector2(4.778, 1);
-        const geometry = new THREE.PlaneGeometry(planeSize.x, planeSize.y, 300, 300)
-        
-        const material = new THREE.ShaderMaterial({
-            vertexShader: sceneVertex,
-            fragmentShader: sceneFragment,
-            side: THREE.DoubleSide,
-            transparent: true,
-            depthTest: false,
-            // blending: THREE.AdditiveBlending,
-            uniforms: {
-                uSize: { value: planeSize },
-                
-                uProgress: { value: 0.6 },
-                uSignal: { value: 0.5 },
-                
-                uAnimate: { value: 0 },
-            },
-        });
 
-        _this.controller.uSignal = _this.Debugger.add(material.uniforms.uSignal, 'value').min(0).max(1).step(0.00001).name('uSignal');
-        ACEvents.addEventListener('AC_pause', resetSignal);
+        const totalEquills = 9;
+        var equillsMeshes = [];
 
-        _this.controller.uProgress = _this.Debugger.add(material.uniforms.uProgress, 'value').min(0).max(1).step(0.00001).name('uProgress');
+        let planeSize = new THREE.Vector2(.4, .4);
+        const planeGeo = new THREE.PlaneGeometry(planeSize.x, planeSize.y, 300, 300)
+
+        for (let i = 0; i < totalEquills; i++) {
+            let material = createEquillMaterial();
+            let equill = new THREE.Mesh(planeGeo, material)
+            equill.position.x = Math.range(Math.random(), 0, 1, -1.5, 1.5)
+            equill.position.y = Math.range(Math.random(), 0, 1, -2, 2)
+            equill.position.z = Math.range(Math.random(), 0, 1, 0, -2)
+
+            _this.scene.add(equill)
+            equillsMeshes.push(equill)
+        }
+
+        function createEquillMaterial({color} = {}) {
+            return new THREE.ShaderMaterial({
+                vertexShader: sceneVertex,
+                fragmentShader: sceneFragment,
+                side: THREE.DoubleSide,
+                transparent: true,
+                depthTest: false,
+                uniforms: {
+                    uColor: { value: new THREE.Color( color || 0x999999 ) },
+                    uSize: { value: planeSize },
+                    
+                    uProgress: { value: 0.6 },
+                    uSignal: { value: 0.5 },
+                    
+                    uAnimate: { value: 0 },
+                },
+            });
+        }
+
+        // _this.controller.uSignal = _this.Debugger.add(material.uniforms.uSignal, 'value').min(0).max(1).step(0.00001).name('uSignal');
+        // ACEvents.addEventListener('AC_pause', resetSignal);
+
+        // _this.controller.uProgress = _this.Debugger.add(material.uniforms.uProgress, 'value').min(0).max(1).step(0.00001).name('uProgress');
         // midiEvents.addEventListener('K1_change', updateProgress);
-
-
-        const mesh = new THREE.Mesh(geometry, material)
-        _this.scene.add(mesh)
 
 
         /**
          * Camera
          */
-        const camera = new THREE.PerspectiveCamera(75, Utils.sizes.width / Utils.sizes.height)
+        const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
         camera.position.z = 9
         _this.scene.add(camera)
         _this.scene.myCamera = camera;
@@ -91,7 +104,10 @@ var Scene10 = {
                 _this.controller.lerpSpeed,
                 time);
             animate += _this.controller.currentSpeed * 0.1;
-            material.uniforms.uAnimate.value = animate;
+
+            equillsMeshes.forEach(mesh => {
+                mesh.material.uniforms.uAnimate.value = animate;
+            });
 
             
             // Audio input

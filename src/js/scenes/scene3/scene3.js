@@ -107,7 +107,7 @@ var Scene3 = {
         /**
          * Camera
          */
-        const camera = new THREE.PerspectiveCamera(75, Utils.sizes.width / Utils.sizes.height)
+        const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
         camera.position.z = 9
         _this.scene.add(camera)
         _this.scene.myCamera = camera;

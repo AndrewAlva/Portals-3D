@@ -54,7 +54,7 @@ var App = {
         window.renderer = new THREE.WebGLRenderer({
             canvas: canvas
         })
-        renderer.setSize(Utils.sizes.width, Utils.sizes.height)
+        renderer.setSize(Utils.screenSize.width, Utils.screenSize.height)
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         
 
@@ -90,7 +90,7 @@ var App = {
         /**
          * Camera
          */
-        const camera = new THREE.PerspectiveCamera(75, Utils.sizes.width / Utils.sizes.height)
+        const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
         camera.position.z = 2
         // scene.add(camera) // Apparently this isn't needed
         window.cam = camera;
@@ -126,16 +126,17 @@ var App = {
 
 
         // Resizing
-        window.addEventListener('resize', () =>
-        {
+        function onResize() {
             // Update camera
-            camera.aspect = Utils.sizes.width / Utils.sizes.height
+            camera.aspect = Utils.screenSize.width / Utils.screenSize.height
             camera.updateProjectionMatrix()
 
             // Update renderer
-            renderer.setSize(Utils.sizes.width, Utils.sizes.height)
+            renderer.setSize(Utils.screenSize.width, Utils.screenSize.height)
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        })
+        };
+
+        Utils.resizeCallbacks.push(onResize);
 
 
         /**

@@ -1,3 +1,4 @@
+uniform vec3 uColor;
 uniform vec2 uSize;
 
 uniform float uProgress;
@@ -31,8 +32,8 @@ void main() {
     ripples = clamp(ripples - blackGradient, 0., 1.);
 
 
-    vec3 color = vec3(ripples);
-    float alpha = uProgress;
+    vec3 color = uColor * ripples;
+    float alpha = uProgress * ripples;
 
     
     gl_FragColor = vec4(color, alpha);

@@ -65,7 +65,7 @@ var Scene5 = {
         /**
          * Camera
          */
-        const camera = new THREE.PerspectiveCamera(75, Utils.sizes.width / Utils.sizes.height)
+        const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
         camera.position.z = 9
         _this.scene.add(camera)
         _this.scene.myCamera = camera;
@@ -77,7 +77,7 @@ var Scene5 = {
         let animate = 0;
         let drumLerping = 0;
         _this.scene.update = function() {
-            let time = Utils.elapsedTime;
+            let time = Utils.screenSize.elapsedTime;
 
             scene5Controller.currentSpeed = Math.damp(
                 scene5Controller.currentSpeed,
