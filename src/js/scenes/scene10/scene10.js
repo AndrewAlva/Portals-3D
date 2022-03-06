@@ -15,9 +15,9 @@ var Scene10 = {
 
         // Scene animation speed
         _this.controller.speed = _this.controller.currentSpeed = 0.05
-        _this.controller.lerpSpeed = 0.0001
+        _this.controller.lerpSpeed = 0.01
         _this.Debugger.add(_this.controller, 'speed').min(0).max(1).step(0.001).name('Scene speed');
-        _this.Debugger.add(_this.controller, 'lerpSpeed').min(0.0001).max(0.015).step(0.0001).name('Scene lerp speed');
+        _this.Debugger.add(_this.controller, 'lerpSpeed').min(0.0001).max(0.1).step(0.0001).name('Scene lerp speed');
 
 
         /**
@@ -40,6 +40,17 @@ var Scene10 = {
 
         const totalEquills = 9;
         var equillsMeshes = [];
+        var equillsGroup = new THREE.Group();
+
+        var moveAmplitude = new THREE.Vector2(3, 1);
+        var moveLerp = new THREE.Vector2(0,0);
+        var glCursorLerped = new THREE.Vector2(0,0);
+
+        // Scene animation speed
+        _this.controller.groupFrictionX = 0.025;
+        _this.controller.groupFrictionY = 0.015;
+        _this.Debugger.add(_this.controller, 'groupFrictionX').min(0.00001).max(0.04).step(0.000001).name('Group friction X');
+        _this.Debugger.add(_this.controller, 'groupFrictionY').min(0.00001).max(0.04).step(0.000001).name('Group friction Y');
 
         let planeSize = new THREE.Vector2(.4, .4);
         const planeGeo = new THREE.PlaneGeometry(planeSize.x, planeSize.y, 300, 300)
@@ -47,13 +58,16 @@ var Scene10 = {
         for (let i = 0; i < totalEquills; i++) {
             let material = createEquillMaterial();
             let equill = new THREE.Mesh(planeGeo, material)
-            equill.position.x = Math.range(Math.random(), 0, 1, -1.5, 1.5)
+            equill.position.x = Math.range(Math.random(), 0, 1, -3, 3)
             equill.position.y = Math.range(Math.random(), 0, 1, -2, 2)
             equill.position.z = Math.range(Math.random(), 0, 1, 0, -2)
 
-            _this.scene.add(equill)
             equillsMeshes.push(equill)
+            equillsGroup.add(equill)
         }
+
+        _this.scene.add(equillsGroup);
+        console.log(equillsGroup);
 
         function createEquillMaterial({color} = {}) {
             return new THREE.ShaderMaterial({
@@ -98,25 +112,34 @@ var Scene10 = {
         _this.scene.update = function() {
             let time = Utils.elapsedTime;
 
-            _this.controller.currentSpeed = Math.damp(
+            _this.controller.currentSpeed = Math.verlet(
                 _this.controller.currentSpeed,
                 _this.controller.speed,
-                _this.controller.lerpSpeed,
-                time);
+                _this.controller.lerpSpeed
+            );
             animate += _this.controller.currentSpeed * 0.1;
 
-            equillsMeshes.forEach(mesh => {
+            equillsMeshes.forEach((mesh, index) => {
                 mesh.material.uniforms.uAnimate.value = animate;
+                // mesh.position.y += 0.01 * (index * 0.01);
+                // if (mesh.position.y > 3) mesh.position.y = -3 
             });
+
+
+            ////* Group position update *////
+            glCursorLerped.x = Math.verlet(glCursorLerped.x, Utils.cursor.glPos.x, _this.controller.groupFrictionX);
+            glCursorLerped.y = Math.verlet(glCursorLerped.y, Utils.cursor.glPos.y, _this.controller.groupFrictionY);
+            
+            equillsGroup.position.x = glCursorLerped.x * moveAmplitude.x * -1;
+            equillsGroup.position.y = glCursorLerped.y * moveAmplitude.y * -1;
 
             
             // Audio input
             const drum = AC.audioSignal(AC.analyserNode, AC.frequencyData, 150, 2500);
-            drumLerping = Math.damp(
+            drumLerping = Math.verlet(
                 drumLerping,
                 drum,
-                0.01,
-                time
+                0.01
             );
             
             if (AC.state.playing) {

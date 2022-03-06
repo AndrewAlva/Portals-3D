@@ -15,3 +15,7 @@ Math.damp = function (a, b, lambda, dt) {
 Math.lerp = function(v0, v1, t) {
     return v0*(1-t)+v1*t
 }
+
+Math.verlet = function(originalValue, reachValue, friction) {
+    return originalValue + ( (reachValue - originalValue) * friction )
+}
