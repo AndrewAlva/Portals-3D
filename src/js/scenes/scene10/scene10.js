@@ -14,7 +14,7 @@ var Scene10 = {
         _this.controller = {};
 
         // Scene animation speed
-        _this.controller.speed = _this.controller.currentSpeed = 0.05
+        _this.controller.speed = _this.controller.currentSpeed = 0.4
         _this.controller.lerpSpeed = 0.01
         _this.Debugger.add(_this.controller, 'speed').min(0).max(1).step(0.001).name('Scene speed');
         _this.Debugger.add(_this.controller, 'lerpSpeed').min(0.0001).max(0.1).step(0.0001).name('Scene lerp speed');
@@ -25,7 +25,7 @@ var Scene10 = {
          */
         _this.loadingManager =  new THREE.LoadingManager()
         _this.textureLoader = new THREE.TextureLoader(_this.loadingManager)
-        // _this.texture1 = _this.textureLoader.load('img/map1.jpg')
+        _this.texture1 = _this.textureLoader.load('img/map2.jpg')
 
 
         /**
@@ -38,7 +38,7 @@ var Scene10 = {
          * Object
          */
 
-        const totalEquills = 9;
+        const totalEquills = 6;
         var equillsMeshes = [];
         var equillsGroup = new THREE.Group();
 
@@ -51,7 +51,7 @@ var Scene10 = {
         _this.Debugger.add(_this.controller, 'groupFrictionX').min(0.00001).max(0.04).step(0.000001).name('Group friction X');
         _this.Debugger.add(_this.controller, 'groupFrictionY').min(0.00001).max(0.04).step(0.000001).name('Group friction Y');
 
-        let planeSize = new THREE.Vector2(.4, .4);
+        let planeSize = new THREE.Vector2(1.5, 1.5);
         const planeGeo = new THREE.PlaneGeometry(planeSize.x, planeSize.y, 300, 300)
 
         for (let i = 0; i < totalEquills; i++) {
@@ -60,6 +60,7 @@ var Scene10 = {
             equill.position.x = Math.range(Math.random(), 0, 1, -3, 3)
             equill.position.y = Math.range(Math.random(), 0, 1, -2, 2)
             equill.position.z = Math.range(Math.random(), 0, 1, 0, -2)
+            equill.strength = 1;
 
             equillsMeshes.push(equill)
             equillsGroup.add(equill)
@@ -78,7 +79,9 @@ var Scene10 = {
                     uColor: { value: new THREE.Color( color || 0x999999 ) },
                     uSize: { value: planeSize },
                     uHover: { value: new THREE.Vector2(.5,.5) },
-                    uStrength: { value: 0 },
+                    uStrength: { value: 1 },
+                    uDisplacementScale: { value: 0.1 },
+                    tMap1: { value: _this.texture1 },
                     
                     uProgress: { value: 0.6 },
                     uSignal: { value: 0.5 },
@@ -87,6 +90,15 @@ var Scene10 = {
                 },
             });
         }
+
+        _this.controller.displacementScale = .244;
+        _this.Debugger.add(_this.controller, 'displacementScale').min(-1).max(1).step(0.001).name('Displacement scale').onFinishChange(updateMeshesScale);
+        function updateMeshesScale() {
+            equillsMeshes.forEach(equill => {
+                equill.material.uniforms.uDisplacementScale.value = _this.controller.displacementScale;
+            });
+        }
+        updateMeshesScale();
 
         // _this.controller.uSignal = _this.Debugger.add(material.uniforms.uSignal, 'value').min(0).max(1).step(0.00001).name('uSignal');
         // ACEvents.addEventListener('AC_pause', resetSignal);
@@ -128,22 +140,32 @@ var Scene10 = {
                 if(!currentIntersect) {
                     console.log('mouse enter')
                 }
-                    currentIntersect = intersects[0]
 
-                    let mouseCenter = new THREE.Vector2(currentIntersect.uv.x, currentIntersect.uv.y)
-                    let center = new THREE.Vector2(currentIntersect.object.material.uniforms.uHover.value.x, currentIntersect.object.material.uniforms.uHover.value.y)
-                    center = Math.verletVec(center, mouseCenter, 0.15);
+                if (currentIntersect && currentIntersect != intersects[0]) {
+                    currentIntersect.object.material.uniforms.uColor.value = new THREE.Color(0xffffff)
+                    currentIntersect.object.strength = 0;
+                }
 
-                    
-                    currentIntersect.object.material.uniforms.uColor.value = new THREE.Color(0xff0000)
-                    currentIntersect.object.material.uniforms.uHover.value = new THREE.Vector2(center.x, center.y)
+                currentIntersect = intersects[0]
+
+                let mouseCenter = new THREE.Vector2(currentIntersect.uv.x, currentIntersect.uv.y)
+                let center = new THREE.Vector2(currentIntersect.object.material.uniforms.uHover.value.x, currentIntersect.object.material.uniforms.uHover.value.y)
+                center = Math.verletVec(center, mouseCenter, 0.15);
+
+                
+                currentIntersect.object.material.uniforms.uColor.value = new THREE.Color(0xff0000)
+                currentIntersect.object.material.uniforms.uHover.value = new THREE.Vector2(center.x, center.y)
+                currentIntersect.object.strength = 1;
                 
             } else {
                 if(currentIntersect) {
                     console.log('mouse leave')
                 }
                 
-                equillsMeshes.forEach(equill => { equill.material.uniforms.uColor.value = new THREE.Color(0xffffff)  });
+                equillsMeshes.forEach(equill => {
+                    equill.material.uniforms.uColor.value = new THREE.Color(0xffffff);
+                    equill.strength = 0;
+                });
                 currentIntersect = null
             }
 
@@ -158,8 +180,7 @@ var Scene10 = {
 
             equillsMeshes.forEach((mesh, index) => {
                 mesh.material.uniforms.uAnimate.value = animate;
-                // mesh.position.y += 0.01 * (index * 0.01);
-                // if (mesh.position.y > 3) mesh.position.y = -3 
+                mesh.material.uniforms.uStrength.value = Math.verlet(mesh.material.uniforms.uStrength.value, mesh.strength, 0.05);
             });
 
 

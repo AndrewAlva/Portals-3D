@@ -16,8 +16,8 @@ Math.lerp = function(v0, v1, t) {
     return v0*(1-t)+v1*t
 }
 
-Math.verlet = function(originalValue, reachValue, friction) {
-    return originalValue + ( (reachValue - originalValue) * friction )
+Math.verlet = function(originalValue, finalValue, friction) {
+    return originalValue + ( (finalValue - originalValue) * friction )
 }
 
 Math.verletVec = function(vec1, vec2, friction) {

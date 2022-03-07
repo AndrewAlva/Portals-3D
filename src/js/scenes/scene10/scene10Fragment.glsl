@@ -2,6 +2,7 @@ uniform vec3 uColor;
 uniform vec2 uSize;
 uniform vec2 uHover;
 uniform float uStrength;
+uniform sampler2D tMap1;
 
 uniform float uProgress;
 uniform float uSignal;
@@ -30,18 +31,20 @@ void main() {
         uHover.y / ratio
     );
 
-    //////// Ripples
-    float rippleScale = uSignal * 100.;
+    vec4 tex1 = texture2D(tMap1, vUv);
 
-    float circle = distance( squaredUv, squaredHover );
-    float ripples = abs( sin( (circle * rippleScale) + uAnimate) );
-    float blackGradient = uSignal * .75 - distance( squaredUv, squaredHover ) * .5;
-    ripples = clamp(ripples - blackGradient, 0., 1.);
+    float blackGradient = distance( squaredUv, squaredHover ) * .75;
+    blackGradient = 1. - pow(blackGradient, 2. + blackGradient * blackGradient);
+    blackGradient = clamp(blackGradient, 0., 10.);
 
+    float ripples = abs( sin( (blackGradient * 10.) + uAnimate) );
 
-    vec3 color = uColor * ripples;
-    float alpha = uProgress * ripples;
-
+    float radialMask = 1. - distance( squaredUv, squaredHover ) * 1.05;
+    radialMask = clamp(radialMask, 0., 10.);
     
-    gl_FragColor = vec4(color, alpha);
+    // vec3 color = vec3(ripples * radialMask);
+    // color *= uColor;
+
+    vec3 color = tex1.rgb;
+    gl_FragColor = vec4(color, 1.);
 }
