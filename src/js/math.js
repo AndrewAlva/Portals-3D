@@ -19,3 +19,7 @@ Math.lerp = function(v0, v1, t) {
 Math.verlet = function(originalValue, reachValue, friction) {
     return originalValue + ( (reachValue - originalValue) * friction )
 }
+
+Math.verletVec = function(vec1, vec2, friction) {
+    return vec1.add( vec2.sub(vec1).multiplyScalar(friction) )
+}

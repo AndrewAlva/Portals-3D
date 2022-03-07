@@ -43,7 +43,6 @@ var Scene10 = {
         var equillsGroup = new THREE.Group();
 
         var moveAmplitude = new THREE.Vector2(3, 1);
-        var moveLerp = new THREE.Vector2(0,0);
         var glCursorLerped = new THREE.Vector2(0,0);
 
         // Scene animation speed
@@ -67,7 +66,6 @@ var Scene10 = {
         }
 
         _this.scene.add(equillsGroup);
-        console.log(equillsGroup);
 
         function createEquillMaterial({color} = {}) {
             return new THREE.ShaderMaterial({
@@ -79,6 +77,8 @@ var Scene10 = {
                 uniforms: {
                     uColor: { value: new THREE.Color( color || 0x999999 ) },
                     uSize: { value: planeSize },
+                    uHover: { value: new THREE.Vector2(.5,.5) },
+                    uStrength: { value: 0 },
                     
                     uProgress: { value: 0.6 },
                     uSignal: { value: 0.5 },
@@ -96,12 +96,10 @@ var Scene10 = {
 
 
         /**
-         * Camera
+         * Raycaster
          */
-        const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
-        camera.position.z = 9
-        _this.scene.add(camera)
-        _this.scene.myCamera = camera;
+        const raycaster = new THREE.Raycaster()
+        Utils.cursor.glPos = new THREE.Vector2(0,0);
 
 
         /**
@@ -109,8 +107,47 @@ var Scene10 = {
          */
         let animate = 0;
         let drumLerping = 0;
+        let currentIntersect = null;
+        const objectsToTest = [];
+        equillsMeshes.forEach(equill => {
+            objectsToTest.push(equill);
+        });
+
         _this.scene.update = function() {
             let time = Utils.elapsedTime;
+
+            /** Raycaster */
+            raycaster.setFromCamera(
+                Utils.cursor.glPos,
+                window.cam
+            );
+            const intersects = raycaster.intersectObjects(objectsToTest);
+
+
+            if(intersects.length) {
+                if(!currentIntersect) {
+                    console.log('mouse enter')
+                }
+                    currentIntersect = intersects[0]
+
+                    let mouseCenter = new THREE.Vector2(currentIntersect.uv.x, currentIntersect.uv.y)
+                    let center = new THREE.Vector2(currentIntersect.object.material.uniforms.uHover.value.x, currentIntersect.object.material.uniforms.uHover.value.y)
+                    center = Math.verletVec(center, mouseCenter, 0.15);
+
+                    
+                    currentIntersect.object.material.uniforms.uColor.value = new THREE.Color(0xff0000)
+                    currentIntersect.object.material.uniforms.uHover.value = new THREE.Vector2(center.x, center.y)
+                
+            } else {
+                if(currentIntersect) {
+                    console.log('mouse leave')
+                }
+                
+                equillsMeshes.forEach(equill => { equill.material.uniforms.uColor.value = new THREE.Color(0xffffff)  });
+                currentIntersect = null
+            }
+
+
 
             _this.controller.currentSpeed = Math.verlet(
                 _this.controller.currentSpeed,
@@ -151,6 +188,18 @@ var Scene10 = {
             }
         }
 
+
+        /**
+         * Event Handlers
+         */
+         window.addEventListener('click', () => {
+            if(currentIntersect)
+            {
+                if( equillsMeshes.indexOf(currentIntersect.object) ) {
+                    console.log('clicked on', currentIntersect.object);
+                }
+            }
+        })
 
         /**
          * MIDI Handlers

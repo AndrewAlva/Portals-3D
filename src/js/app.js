@@ -198,7 +198,7 @@ var App = {
 window.onload = function() {
     window.addEventListener('click', _ => {
         App.init({
-            enableVR: true
+            enableVR: false
         });
     }, {once: true});
 }

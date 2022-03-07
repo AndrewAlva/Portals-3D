@@ -1,5 +1,7 @@
 uniform vec3 uColor;
 uniform vec2 uSize;
+uniform vec2 uHover;
+uniform float uStrength;
 
 uniform float uProgress;
 uniform float uSignal;
@@ -22,13 +24,18 @@ void main() {
         .5,
         .5 / ratio
     );
+    
+    vec2 squaredHover = vec2(
+        uHover.x,
+        uHover.y / ratio
+    );
 
     //////// Ripples
     float rippleScale = uSignal * 100.;
 
-    float circle = distance( squaredUv, squaredCenter );
+    float circle = distance( squaredUv, squaredHover );
     float ripples = abs( sin( (circle * rippleScale) + uAnimate) );
-    float blackGradient = uSignal * .75 - distance( squaredUv, squaredCenter ) * .5;
+    float blackGradient = uSignal * .75 - distance( squaredUv, squaredHover ) * .5;
     ripples = clamp(ripples - blackGradient, 0., 1.);
 
 
