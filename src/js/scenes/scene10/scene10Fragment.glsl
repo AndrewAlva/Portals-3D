@@ -12,6 +12,7 @@ uniform float uAnimate;
 varying vec2 vUv;
 
 #pragma glslify: rangeF = require('../../shaders/modules/rangeF.glsl')
+#pragma glslify: roundedBorder = require('../../shaders/modules/roundedBorder.glsl')
 
 
 void main() {
@@ -45,6 +46,17 @@ void main() {
     // vec3 color = vec3(ripples * radialMask);
     // color *= uColor;
 
+    //// Start border calculation
+    float borderWidth = 0.01;
+	float borderStep = .5 - borderWidth;
+	vec2 borderAspectRatio = vec2(.5 - (borderWidth*ratio), borderStep);
+
+	float borderX = step(borderAspectRatio.x, abs(squaredUv.y - 0.5) );
+	float borderY = step(borderAspectRatio.y, abs(squaredUv.x - 0.5) );
+	float border = borderX + borderY;
+    border *= uStrength;
+
     vec3 color = tex1.rgb;
+    color += border;
     gl_FragColor = vec4(color, 1.);
 }

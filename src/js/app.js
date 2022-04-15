@@ -20,6 +20,7 @@ import { Scene7 } from './scenes/scene7/scene7.js';
 import { Scene8 } from './scenes/scene8/scene8.js';
 import { Scene9 } from './scenes/scene9/scene9.js';
 import { Scene10 } from './scenes/scene10/scene10.js';
+import { Scene11 } from './scenes/scene11/scene11.js';
 
 var App = {
     init: async function({ enableVR = false } = {}) {
@@ -72,6 +73,7 @@ var App = {
         Scene8.init();
         Scene9.init();
         Scene10.init();
+        Scene11.init();
 
         // Scene Manager
         // var scene = SceneEx.scene;
@@ -84,7 +86,8 @@ var App = {
         // var scene = Scene7.scene;
         // var scene = Scene8.scene;
         // var scene = Scene9.scene;
-        var scene = Scene10.scene;
+        // var scene = Scene10.scene;
+        var scene = Scene11.scene;
 
 
         /**
