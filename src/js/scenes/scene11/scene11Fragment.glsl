@@ -1,3 +1,5 @@
+uniform float uDepth;
+uniform float uRadialBloom;
 uniform float uAnimate;
 uniform vec3 uColor;
 
@@ -18,7 +20,17 @@ void main() {
 
     vec4 maskColor = vec4(vec3(vMask), 1.);
 
-    vec4 finalColor = mix(color, maskColor, vMask);
-    gl_FragColor = finalColor;
     gl_FragColor = vec4(maskColor * color);
+
+
+        // /* Chaotic ripples */
+        // float circle = distance(vUv, vec2(.5));
+        // circle -= mod(uAnimate * 0.01, 1.);
+        // float totalRipples = uDepth * 10.;
+        // float ripples = mod(circle * (totalRipples), 1.);
+        // ripples = smoothstep(uRadialBloom, uRadialBloom + .2, ripples);
+
+        // vec4 radialBlendColor = mix(color, maskColor, vMask);
+
+        // gl_FragColor = vec4(vec3(radialBlendColor*ripples), 1.);
 }
