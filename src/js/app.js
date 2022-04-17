@@ -21,6 +21,7 @@ import { Scene8 } from './scenes/scene8/scene8.js';
 import { Scene9 } from './scenes/scene9/scene9.js';
 import { Scene10 } from './scenes/scene10/scene10.js';
 import { Scene11 } from './scenes/scene11/scene11.js';
+import { Scene12 } from './scenes/scene12/scene12.js';
 
 var App = {
     init: async function({ enableVR = false } = {}) {
@@ -38,7 +39,7 @@ var App = {
         })
     },
 
-    start: function({enableVR}) {
+    start: async function({enableVR}) {
         /**
          * GUI
          */
@@ -53,7 +54,9 @@ var App = {
          * Renderer
          */
         window.renderer = new THREE.WebGLRenderer({
-            canvas: canvas
+            canvas: canvas,
+            antialias: true,
+            alpha: true
         })
         renderer.setSize(Utils.screenSize.width, Utils.screenSize.height)
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -74,6 +77,7 @@ var App = {
         Scene9.init();
         Scene10.init();
         Scene11.init();
+        await Scene12.init();
 
         // Scene Manager
         // var scene = SceneEx.scene;
@@ -87,7 +91,8 @@ var App = {
         // var scene = Scene8.scene;
         // var scene = Scene9.scene;
         // var scene = Scene10.scene;
-        var scene = Scene11.scene;
+        // var scene = Scene11.scene;
+        var scene = Scene12.scene;
 
 
         /**

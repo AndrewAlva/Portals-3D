@@ -9,8 +9,8 @@ var Scene11 = {
         /**
          * GUI
          */
-        const scene11Debugger = window.Utils.gui.addFolder('Scene11');
-        scene11Debugger.open();
+        const scene11Debugger = window.Utils.gui.addFolder('11. Sphere Noise');
+        // scene11Debugger.open();
         const scene11Controller = {};
 
         // Scene animation speed
@@ -29,8 +29,8 @@ var Scene11 = {
         /**
          * Object
          */
-        const geometry = new THREE.PlaneGeometry(2, 2, 300, 300)
-        // const geometry = new THREE.SphereGeometry(2, 600, 600)
+        // const geometry = new THREE.PlaneGeometry(2, 2, 300, 300)
+        const geometry = new THREE.SphereGeometry(4, 600, 600)
         // const geometry = new THREE.BoxGeometry(2, 2, 2, 300, 300, 300)
         
         const material = new THREE.ShaderMaterial({
