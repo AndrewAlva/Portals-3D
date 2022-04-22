@@ -9,7 +9,7 @@ var Scene10 = {
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('Scene10');
+        _this.Debugger = window.Utils.gui.addFolder('10. Parallax planes');
         // _this.Debugger.open();
         _this.controller = {};
 
@@ -154,7 +154,8 @@ var Scene10 = {
 
                 
                 currentIntersect.object.material.uniforms.uColor.value = new THREE.Color(0xff0000)
-                currentIntersect.object.material.uniforms.uHover.value = new THREE.Vector2(center.x, center.y)
+                currentIntersect.object.material.uniforms.uHover.value.x = center.x
+                currentIntersect.object.material.uniforms.uHover.value.y = center.y
                 currentIntersect.object.strength = 1;
                 
             } else {
@@ -181,6 +182,12 @@ var Scene10 = {
             equillsMeshes.forEach((mesh, index) => {
                 mesh.material.uniforms.uAnimate.value = animate;
                 mesh.material.uniforms.uStrength.value = Math.verlet(mesh.material.uniforms.uStrength.value, mesh.strength, 0.05);
+
+                let hoverState = new THREE.Vector2(mesh.material.uniforms.uHover.value.x, mesh.material.uniforms.uHover.value.y)
+                let center = new THREE.Vector2(.5, .5);
+                hoverState = Math.verletVec(hoverState, center, 0.15);
+                mesh.material.uniforms.uHover.value.x = hoverState.x;
+                mesh.material.uniforms.uHover.value.y = hoverState.y;
             });
 
 

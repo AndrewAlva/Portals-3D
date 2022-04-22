@@ -32,7 +32,7 @@ void main() {
         uHover.y / ratio
     );
 
-    vec4 tex1 = texture2D(tMap1, vUv - (squaredHover - vec2(.5)));
+    vec4 tex1 = texture2D(tMap1, vUv);
 
     float blackGradient = distance( squaredUv, squaredHover ) * .75;
     blackGradient = 1. - pow(blackGradient, 2. + blackGradient * blackGradient);
@@ -43,8 +43,8 @@ void main() {
     float radialMask = 1. - distance( squaredUv, squaredHover ) * 1.05;
     radialMask = clamp(radialMask, 0., 10.);
     
-    // vec3 color = vec3(ripples * radialMask);
-    // color *= uColor;
+    vec3 colorRipples = vec3(ripples * radialMask);
+    colorRipples *= uColor;
 
     //// Start border calculation
     float borderWidth = 0.01;
@@ -58,5 +58,6 @@ void main() {
 
     vec3 color = tex1.rgb;
     color += border;
-    gl_FragColor = vec4(color, 1.);
+    color /= colorRipples;
+    gl_FragColor = vec4(colorRipples, 1.);
 }
