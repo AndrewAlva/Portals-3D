@@ -2,12 +2,17 @@ import * as THREE from 'three'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
 const hdriURL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/empty_warehouse_01_1k.hdr';
+// const hdriURL = 'https://i.imgur.com/ukoyi9f.png';
+
 const heightMapURL = 'https://i.imgur.com/oYS135g.jpeg';
 // const heightMapURL = 'https://i.imgur.com/dMYV4cf.jpeg';
+
+const displacementMapURL = 'https://i.imgur.com/L1pqRg9.jpeg';
 
 var Scene12 = {
     init: async function () {
         var _this = this;
+        const textureLoader = new THREE.TextureLoader()
 
         /**
          * Scene
@@ -15,13 +20,26 @@ var Scene12 = {
          _this.scene = new THREE.Scene()
          // Environment
          const envMap = await loadHDRI(hdriURL, window.renderer)
-         this.scene.environment = this.scene.background = envMap
+            //  const envMap = await loadTexture(hdriURL)
+            //  envMap.mapping = THREE.EquirectangularReflectionMapping
+            //  const sun = new THREE.DirectionalLight('white', 0.1)
+            //  sun.position.setScalar(3)
+            //  _this.scene.add(sun)
+            //  _this.scene.add(new THREE.AmbientLight('white', 0.2))
+
+        //  this.scene.environment = this.scene.background = envMap
+         this.scene.environment = envMap
          renderer.toneMapping = THREE.ACESFilmicToneMapping
          renderer.outputEncoding = THREE.sRGBEncoding
  
          // Load heightmap texture
-         const textureLoader = new THREE.TextureLoader()
          const heightMap = await loadTexture(heightMapURL)
+         heightMap.wrapS = heightMap.wrapT = THREE.RepeatWrapping
+         const displacementMap = await loadTexture(displacementMapURL)
+         displacementMap.wrapS = displacementMap.wrapT = THREE.RepeatWrapping
+
+         // Prevent seam introduced by THREE.LinearFilter
+        heightMap.minFilter = displacementMap.minFilter = THREE.NearestFilter
 
 
 
@@ -43,14 +61,23 @@ var Scene12 = {
          var materialVars = {
              uColorA: '#000000',
              uColorB: '#00ffaa',
+             multiplierA: 1,
+             multiplierB: 1,
          };
          var materialUniforms = {
              uIterations: { value: 32 },
              uDepth: { value: 0.6 },
              uSmoothing: { value: 0.2 },
-             uColorA: { value: new THREE.Color(materialVars.uColorA) },
-             uColorB: { value: new THREE.Color(materialVars.uColorB) },
-             uHeightMap: { value: heightMap }
+             uDisplacement: { value: 0.2 },
+             uDispForceX1: { value: 1 },
+             uDispForceY1: { value: 1 },
+             uDispForceX2: { value: -1 },
+             uDispForceY2: { value: -1 },
+             uTime: { value: 0 },
+             uColorA: { value: new THREE.Color(materialVars.uColorA).multiplyScalar(materialVars.multiplierA) },
+             uColorB: { value: new THREE.Color(materialVars.uColorB).multiplyScalar(materialVars.multiplierB) },
+             uHeightMap: { value: heightMap },
+             uDisplacementMap: { value: displacementMap }
          };
 
         
@@ -60,6 +87,8 @@ var Scene12 = {
          * Object
          */
         const geometry = new THREE.SphereGeometry(1, 64, 32)
+        // const geometry = new THREE.TorusKnotGeometry(2, .7, 900, 60)
+        // const geometry = new THREE.TorusGeometry(2, .7, 360, 36)
 
         // const material = new THREE.ShaderMaterial({
         //     vertexShader: testVertexShader,
@@ -77,7 +106,10 @@ var Scene12 = {
         //         uColor: { value: new THREE.Color('#ffffff') }
         //     },
         // });
-        const material = new THREE.MeshStandardMaterial();
+        const material = new THREE.MeshStandardMaterial({
+            // envMapIntensity: 10,
+            side: THREE.DoubleSide
+        });
 
         material.onBeforeCompile = shader => {
             shader.uniforms = { ...shader.uniforms, ...materialUniforms };
@@ -99,19 +131,50 @@ var Scene12 = {
             /* FS */
             // Add to top of fragment shader
             shader.fragmentShader = `
-            uniform vec3 uColorA;
-            uniform vec3 uColorB;
-            uniform sampler2D uHeightMap;
-            uniform int uIterations;
-            uniform float uDepth;
-            uniform float uSmoothing;
-            
-            varying vec3 v_pos;
-            varying vec3 v_dir;
-            ` + shader.fragmentShader;
+                #define FLIP vec2(1., -1.)
+
+                uniform vec3 uColorA;
+                uniform vec3 uColorB;
+                uniform sampler2D uHeightMap;
+                uniform sampler2D uDisplacementMap;
+                uniform int uIterations;
+                uniform float uDepth;
+                uniform float uSmoothing;
+                
+                uniform float uDisplacement;
+                uniform float uDispForceX1;
+                uniform float uDispForceY1;
+                uniform float uDispForceX2;
+                uniform float uDispForceY2;
+                uniform float uTime;
+                
+                varying vec3 v_pos;
+                varying vec3 v_dir;
+                ` + shader.fragmentShader;
 
             // Add above fragment shader main() so we can access common.glsl.js
             shader.fragmentShader = shader.fragmentShader.replace(/void main\(\) {/, (match) => `
+                /**
+                 * @param p - Point to displace
+                 * @param strength - How much the map can displace the point
+                 * @returns Point with scrolling displacement applied
+                 */
+
+                vec3 displacePoint(vec3 p, float strength) {
+                    vec2 uv = equirectUv(normalize(p));
+                    vec2 direction1 = vec2(uTime * uDispForceX1, uTime * uDispForceY1);
+                    vec2 direction2 = vec2(uTime * uDispForceX2, uTime * uDispForceY2);
+                    vec3 displacementA = texture(uDisplacementMap, uv + direction1).rgb; // Upright
+                    vec3 displacementB = texture(uDisplacementMap, uv + direction2).rgb; // Upside down
+                  
+                    // Center the range to [-0.5, 0.5], note the range of their sum is [-1, 1]
+                    displacementA -= 0.5;
+                    displacementB -= 0.5;
+                    
+                    return p + strength * (displacementA + displacementB);
+                }
+
+
                 /**
                 * @param rayOrigin - Point on sphere
                 * @param rayDir - Normalized ray direction
@@ -126,9 +189,10 @@ var Scene12 = {
                     float totalVolume = 0.;
 
                     for (int i=0; i<uIterations; ++i) {
-                        // Read heightmap from current spherical direction
-                        vec2 uv = equirectUv(normalize(p));
-                        float heightMapVal = texture(uHeightMap, uv).r;
+                        // Read heightmap from current spherical direction of displaced ray position
+                        vec3 displaced = displacePoint(p, uDisplacement);
+                        vec2 uv = equirectUv(normalize(displaced));
+                        float heightMapVal = texture(uHeightMap, uv - vec2(uTime, 0.)).r;
 
                         // Take a slice of the heightmap
                         float height = length(p); // 1 at surface, 0 at core, assuming radius = 1
@@ -158,12 +222,28 @@ var Scene12 = {
         ////// Mesh Standard Material Vars
         material.roughness = 0.09
         scene12Debugger.add(material, 'roughness', 0, 1, 0.01).name('Roughness')
+        material.envMapIntensity = 1
+        scene12Debugger.add(material, 'envMapIntensity', -10, 10, 0.01).name('Env Map Intensity')
 
         scene12Debugger.add(materialUniforms.uIterations, 'value', 0, 64, 1).name('uIterations');
         scene12Debugger.add(materialUniforms.uDepth, 'value', 0, 1, 0.01).name('uDepth');
         scene12Debugger.add(materialUniforms.uSmoothing, 'value', 0, 1, 0.01).name('uSmoothing');
-        scene12Debugger.addColor(materialVars, 'uColorA').name('uColorA').onChange(v => materialUniforms.uColorA.value.set(v));
-        scene12Debugger.addColor(materialVars, 'uColorB').name('uColorB').onChange(v => materialUniforms.uColorB.value.set(v));
+        scene12Debugger.add(materialUniforms.uDisplacement, 'value', -1, 1, 0.001).name('uDisplacement');
+        scene12Debugger.add(materialUniforms.uDispForceX1, 'value', -1, 1, 0.001).name('uDispForce x1');
+        scene12Debugger.add(materialUniforms.uDispForceX2, 'value', -1, 1, 0.001).name('uDispForce x2');
+        scene12Debugger.add(materialUniforms.uDispForceY1, 'value', -1, 1, 0.001).name('uDispForce y1');
+        scene12Debugger.add(materialUniforms.uDispForceY2, 'value', -1, 1, 0.001).name('uDispForce y2');
+        scene12Debugger.addColor(materialVars, 'uColorA').name('In color').onChange(updateColorA);
+        scene12Debugger.addColor(materialVars, 'uColorB').name('Out color').onChange(updateColorB);
+        scene12Debugger.add(materialVars, 'multiplierA', -2, 2, 0.001).name('In multiplier').onChange(updateColorA);
+        scene12Debugger.add(materialVars, 'multiplierB', -2, 2, 0.001).name('Out multiplier').onChange(updateColorB);
+
+        function updateColorA() {
+            materialUniforms.uColorA.value.set(materialVars.uColorA).multiplyScalar(materialVars.multiplierA)
+        }
+        function updateColorB() {
+            materialUniforms.uColorB.value.set(materialVars.uColorB).multiplyScalar(materialVars.multiplierB)
+        }
 
         // scene12Controller.uDepth = scene12Debugger.add(material.uniforms.uDepth, 'value').min(-15).max(15).step(0.001).name('uDepth');
         // scene12Controller.uStrength = scene12Debugger.add(material.uniforms.uStrength, 'value').min(0).max(1).step(0.00001).name('uStrength');
@@ -202,7 +282,7 @@ var Scene12 = {
                 scene12Controller.lerpSpeed,
                 time);
             animate += scene12Controller.currentSpeed * 0.1;
-            // material.uniforms.uAnimate.value = animate;
+            materialUniforms.uTime.value = animate;
 
 
             // Audio input

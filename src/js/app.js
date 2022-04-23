@@ -56,7 +56,7 @@ var App = {
         window.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true,
-            alpha: true
+            // alpha: true
         })
         renderer.setSize(Utils.screenSize.width, Utils.screenSize.height)
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -131,6 +131,7 @@ var App = {
         // Controls
         const controls = new OrbitControls(camera, canvas)
         controls.enableDamping = true
+        // controls.autoRotate = true
 
 
         // Resizing
