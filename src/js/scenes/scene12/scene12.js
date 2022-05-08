@@ -4,8 +4,8 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 const hdriURL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/empty_warehouse_01_1k.hdr';
 // const hdriURL = 'https://i.imgur.com/ukoyi9f.png';
 
-const heightMapURL = 'https://i.imgur.com/oYS135g.jpeg';
-// const heightMapURL = 'https://i.imgur.com/dMYV4cf.jpeg';
+// const heightMapURL = 'https://i.imgur.com/oYS135g.jpeg';
+const heightMapURL = 'https://i.imgur.com/dMYV4cf.jpeg';
 
 const displacementMapURL = 'https://i.imgur.com/L1pqRg9.jpeg';
 
@@ -48,11 +48,11 @@ var Scene12 = {
           * GUI
           */
          const scene12Debugger = window.Utils.gui.addFolder('12. Magical Marble');
-         scene12Debugger.open();
+        //  scene12Debugger.open();
          const scene12Controller = {};
  
          // Scene animation speed
-         scene12Controller.speed = scene12Controller.currentSpeed = 0.005
+         scene12Controller.speed = scene12Controller.currentSpeed = 0.15
          scene12Controller.lerpSpeed = 0.0001
          scene12Debugger.add(scene12Controller, 'speed').min(0).max(1).step(0.001).name('Scene speed');
          scene12Debugger.add(scene12Controller, 'lerpSpeed').min(0.0001).max(0.015).step(0.0001).name('Scene lerp speed');
@@ -60,7 +60,7 @@ var Scene12 = {
          // THREE Standard Material custom uniforms
          var materialVars = {
              uColorA: '#000000',
-             uColorB: '#00ffaa',
+             uColorB: '#ff9200',
              multiplierA: 1,
              multiplierB: 1,
          };
@@ -88,7 +88,8 @@ var Scene12 = {
          */
         const geometry = new THREE.SphereGeometry(1, 64, 32)
         // const geometry = new THREE.TorusKnotGeometry(2, .7, 900, 60)
-        // const geometry = new THREE.TorusGeometry(2, .7, 360, 36)
+        // const geometry = new THREE.TorusGeometry(2, 1.8, 360, 36)
+        // const geometry = new THREE.PlaneGeometry(2, 2, 60, 60)
 
         // const material = new THREE.ShaderMaterial({
         //     vertexShader: testVertexShader,
@@ -220,15 +221,15 @@ var Scene12 = {
         }
 
         ////// Mesh Standard Material Vars
-        material.roughness = 0.09
+        material.roughness = 0.48
         scene12Debugger.add(material, 'roughness', 0, 1, 0.01).name('Roughness')
-        material.envMapIntensity = 1
+        material.envMapIntensity = 0.81
         scene12Debugger.add(material, 'envMapIntensity', -10, 10, 0.01).name('Env Map Intensity')
 
-        scene12Debugger.add(materialUniforms.uIterations, 'value', 0, 64, 1).name('uIterations');
-        scene12Debugger.add(materialUniforms.uDepth, 'value', 0, 1, 0.01).name('uDepth');
-        scene12Debugger.add(materialUniforms.uSmoothing, 'value', 0, 1, 0.01).name('uSmoothing');
-        scene12Debugger.add(materialUniforms.uDisplacement, 'value', -1, 1, 0.001).name('uDisplacement');
+        scene12Controller.uIterations = scene12Debugger.add(materialUniforms.uIterations, 'value', 0, 64, 1).name('uIterations');
+        scene12Controller.uDepth = scene12Debugger.add(materialUniforms.uDepth, 'value', 0, 1, 0.01).name('uDepth');
+        scene12Controller.uSmoothing = scene12Debugger.add(materialUniforms.uSmoothing, 'value', 0, 1, 0.01).name('uSmoothing');
+        scene12Controller.uDisplacement = scene12Debugger.add(materialUniforms.uDisplacement, 'value', -1, 1, 0.001).name('uDisplacement');
         scene12Debugger.add(materialUniforms.uDispForceX1, 'value', -1, 1, 0.001).name('uDispForce x1');
         scene12Debugger.add(materialUniforms.uDispForceX2, 'value', -1, 1, 0.001).name('uDispForce x2');
         scene12Debugger.add(materialUniforms.uDispForceY1, 'value', -1, 1, 0.001).name('uDispForce y1');
@@ -236,7 +237,7 @@ var Scene12 = {
         scene12Debugger.addColor(materialVars, 'uColorA').name('In color').onChange(updateColorA);
         scene12Debugger.addColor(materialVars, 'uColorB').name('Out color').onChange(updateColorB);
         scene12Debugger.add(materialVars, 'multiplierA', -2, 2, 0.001).name('In multiplier').onChange(updateColorA);
-        scene12Debugger.add(materialVars, 'multiplierB', -2, 2, 0.001).name('Out multiplier').onChange(updateColorB);
+        scene12Controller.multiplierB = scene12Debugger.add(materialVars, 'multiplierB', -2, 2, 0.001).name('Out multiplier').onChange(updateColorB);
 
         function updateColorA() {
             materialUniforms.uColorA.value.set(materialVars.uColorA).multiplyScalar(materialVars.multiplierA)
@@ -273,6 +274,15 @@ var Scene12 = {
          */
         let animate = 0;
         let drumLerping = 0;
+        let snareLerping = 0;
+
+        let range1Lerped = 0;
+        let range2Lerped = 0;
+        let range3Lerped = 0;
+        let range4Lerped = 0;
+        let range5Lerped = 0;
+
+
         _this.scene.update = function () {
             let time = Utils.elapsedTime;
 
@@ -281,7 +291,7 @@ var Scene12 = {
                 scene12Controller.speed,
                 scene12Controller.lerpSpeed,
                 time);
-            animate += scene12Controller.currentSpeed * 0.1;
+            animate += scene12Controller.currentSpeed * 0.0075;
             materialUniforms.uTime.value = animate;
 
 
@@ -294,18 +304,70 @@ var Scene12 = {
                 time
             );
             const snare = AC.audioSignal(AC.analyserNode, AC.frequencyData, 1000, 1080);
+            snareLerping = Math.verlet(
+                snareLerping,
+                snare,
+                0.1
+            );
+
+            const freqRanges = [
+                0,
+                1000,
+                2000,
+                3000,
+                4000,
+                5000,
+                6000
+            ];
+            const freqSpacing = 73;
+
+            // const range1 = AC.audioSignal(AC.analyserNode, AC.frequencyData, 0, freqSpacing);
+            const range1 = AC.audioSignal(AC.analyserNode, AC.frequencyData, 0, 50);
+            range1Lerped = Math.verlet(range1Lerped, range1, 0.9);
+            // const range2 = AC.audioSignal(AC.analyserNode, AC.frequencyData, freqSpacing, freqSpacing*2);
+            const range2 = AC.audioSignal(AC.analyserNode, AC.frequencyData, 2000, 2100);
+            range2Lerped = Math.verlet(range2Lerped, range2, 0.5);
+            // const range3 = AC.audioSignal(AC.analyserNode, AC.frequencyData, freqSpacing*2, freqSpacing*3);
+            const range3 = AC.audioSignal(AC.analyserNode, AC.frequencyData, 150, 200);
+            range3Lerped = Math.verlet(range3Lerped, range3, 0.75);
+            // const range4 = AC.audioSignal(AC.analyserNode, AC.frequencyData, freqSpacing*3, freqSpacing*4);
+            const range4 = AC.audioSignal(AC.analyserNode, AC.frequencyData, 600, 800);
+            range4Lerped = Math.verlet(range4Lerped, range4, 0.95);
+            // const range5 = AC.audioSignal(AC.analyserNode, AC.frequencyData, freqSpacing*4, freqSpacing*5);
+            const range5 = AC.audioSignal(AC.analyserNode, AC.frequencyData, 0, 1000);
+            range5Lerped = Math.verlet(range5Lerped, range5, 0.5);
 
             if (AC.state.playing) {
-                // Vertex updates
-                scene12Controller.uStrength.object.value = drumLerping;
-                scene12Controller.uStrength.updateDisplay();
+                // scene12Controller.uDepth.object.value = drumLerping;
+                // scene12Controller.uDepth.updateDisplay();
+                
+                // scene12Controller.uDisplacement.object.value = Math.max(0.1, snareLerping);
+                // scene12Controller.uDisplacement.updateDisplay();
 
+                // scene12Controller.multiplierB.object.multiplierB = Math.range(snareLerping * 2, 0, 1, scene12Controller.multiplierB.__min, scene12Controller.multiplierB.__max);
+                // updateColorB();
+                // scene12Controller.multiplierB.updateDisplay();
 
-                // Fragment updates
-                let ripples = scene12Controller.uRipples.__max * snare;
-                ripples = Math.max(1, ripples);
-                scene12Controller.uRipples.object.value = ripples;
-                scene12Controller.uRipples.updateDisplay();
+                const musicIterations = Math.range(range1Lerped, 0, 1, 0, scene12Controller.uIterations.__max);
+                scene12Controller.uIterations.object.value = Math.max(2, musicIterations);
+                scene12Controller.uIterations.updateDisplay();
+
+                const musicDepth = Math.range(range3Lerped, 0, 1, 0, scene12Controller.uDepth.__max);
+                scene12Controller.uDepth.object.value = musicDepth;
+                scene12Controller.uDepth.updateDisplay();
+                
+                const musicSmoothing = Math.range(range2Lerped, 0, 1, 0, scene12Controller.uSmoothing.__max);
+                scene12Controller.uSmoothing.object.value = musicSmoothing;
+                scene12Controller.uSmoothing.updateDisplay();
+                
+                const musicDisplace = Math.range(range4Lerped * 2, 0, 1, 0.01, scene12Controller.uDisplacement.__max);
+                scene12Controller.uDisplacement.object.value = musicDisplace;
+                scene12Controller.uDisplacement.updateDisplay();
+                
+                const musicMultiplierB = Math.range(range5Lerped * 1.6, 0, 1, scene12Controller.multiplierB.__max, scene12Controller.multiplierB.__min);
+                scene12Controller.multiplierB.object.multiplierB = musicMultiplierB;
+                updateColorB();
+                scene12Controller.multiplierB.updateDisplay();
             }
         }
 
