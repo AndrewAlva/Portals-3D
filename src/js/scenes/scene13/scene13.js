@@ -1,10 +1,19 @@
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import sceneVertex from './scene13Vertex.glsl'
 import sceneFragment from './scene13Fragment.glsl'
+
+import rt1Vertex from './rt1Vertex.glsl'
+import rt1Fragment from './rt1Fragment.glsl'
+import rt2Vertex from './rt2Vertex.glsl'
+import rt2Fragment from './rt2Fragment.glsl'
 
 var Scene13 = {
     init: function() {
         var _this = this;
+
+        // Canvas
+        const canvas = document.querySelector('canvas.webgl')
 
         /**
          * GUI
@@ -27,6 +36,71 @@ var Scene13 = {
         _this.textureLoader = new THREE.TextureLoader(_this.loadingManager)
         _this.texture1 = _this.textureLoader.load('_assets/uv.jpg')
 
+        
+        /**
+         * Render Targets
+         */
+        var rtWidth = Utils.screenSize.width;
+        var rtHeight = Utils.screenSize.height;
+        _this.RT1 = new THREE.WebGLRenderTarget(rtWidth, rtHeight, {
+            depthBuffer: false
+        });
+        _this.RT2 = new THREE.WebGLRenderTarget(rtWidth, rtHeight, {
+            depthBuffer: false
+        });
+
+        _this.rtScene1 = new THREE.Scene();
+        _this.rtScene2 = new THREE.Scene();
+
+        // const rtGeom1 = new THREE.PlaneGeometry(2, 0.5, 300, 300)
+        const rtGeom1 = new THREE.TorusKnotGeometry(2, .7, 900, 60)
+    
+        const rtMaterial1 = new THREE.ShaderMaterial({
+            vertexShader: rt1Vertex,
+            fragmentShader: rt1Fragment,
+            side: THREE.DoubleSide,
+            transparent: true,
+            depthTest: false,
+            blending: THREE.AdditiveBlending,
+            uniforms: {
+                uSize: { value: new THREE.Vector2(2, 0.5) },
+                
+                uProgress: { value: 0.6 },
+                uSignal: { value: 0.5 },
+                
+                uAnimate: { value: 0 },
+            },
+        });
+        const rtMaterial2 = new THREE.ShaderMaterial({
+            vertexShader: rt2Vertex,
+            fragmentShader: rt2Fragment,
+            side: THREE.DoubleSide,
+            transparent: true,
+            depthTest: false,
+            blending: THREE.AdditiveBlending,
+            uniforms: {
+                uSize: { value: new THREE.Vector2(2, 0.5) },
+                
+                uSignal: { value: 1 },
+                uProgress: { value: 1 },
+                
+                uAnimate: { value: 0 },
+            },
+        });
+
+        const rtMesh1 = new THREE.Mesh(rtGeom1, rtMaterial1)
+        const rtMesh2 = new THREE.Mesh(rtGeom1, rtMaterial2)
+
+        _this.rtScene1.add(rtMesh1)
+        _this.rtScene2.add(rtMesh2)
+
+        _this.controller.uSignal = _this.Debugger.add(rtMaterial1.uniforms.uSignal, 'value').min(0).max(1).step(0.00001).name('uSignal');
+        ACEvents.addEventListener('AC_pause', resetSignal);
+
+        _this.controller.uProgress = _this.Debugger.add(rtMaterial1.uniforms.uProgress, 'value').min(0).max(1).step(0.00001).name('uProgress');
+        // midiEvents.addEventListener('K1_change', updateProgress);
+
+
 
         /**
          * Scene
@@ -35,54 +109,31 @@ var Scene13 = {
 
 
         /**
-         * Object
+         * Objects
          */
-        let planeSize = new THREE.Vector2(Utils.screenSize.width, Utils.screenSize.height);
-        // const geometry = new THREE.PlaneGeometry(planeSize.x, planeSize.y, 300, 300)
         const geometry = Utils3D.getQuad();
         
         const material = new THREE.ShaderMaterial({
             vertexShader: sceneVertex,
             fragmentShader: sceneFragment,
-            side: THREE.DoubleSide,
             transparent: true,
             depthTest: false,
             // blending: THREE.AdditiveBlending,
             uniforms: {
-                uSize: { value: planeSize },
-                
-                uProgress: { value: 0.6 },
-                uSignal: { value: 0.5 },
-                
+                tMap1: { value: _this.RT1.texture },
+                tMap2: { value: _this.RT2.texture },
                 uAnimate: { value: 0 },
-                tMap: { value: _this.texture1 },
             },
         });
-
-        _this.controller.uSignal = _this.Debugger.add(material.uniforms.uSignal, 'value').min(0).max(1).step(0.00001).name('uSignal');
-        ACEvents.addEventListener('AC_pause', resetSignal);
-
-        _this.controller.uProgress = _this.Debugger.add(material.uniforms.uProgress, 'value').min(0).max(1).step(0.00001).name('uProgress');
-        // midiEvents.addEventListener('K1_change', updateProgress);
-
 
         const mesh = new THREE.Mesh(geometry, material)
         _this.scene.add(mesh)
 
 
         /**
-         * Camera
-         */
-        const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
-        camera.position.z = 9
-        _this.scene.add(camera)
-        _this.scene.myCamera = camera;
-
-        /**
          * Resizing
          */
         function handleResize() {
-            material.uniforms.uSize.value.set(Utils.screenSize.width, Utils.screenSize.height);
         }
 
         Utils.resizeCallbacks.push(handleResize);
@@ -103,6 +154,8 @@ var Scene13 = {
                 time);
             animate += _this.controller.currentSpeed * 0.1;
             material.uniforms.uAnimate.value = animate;
+            rtMaterial1.uniforms.uAnimate.value = animate;
+            rtMaterial2.uniforms.uAnimate.value = animate;
 
             
             // Audio input

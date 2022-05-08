@@ -1,43 +1,17 @@
-uniform vec2 uSize;
-
-uniform float uProgress;
-uniform float uSignal;
-
+uniform sampler2D tMap1;
+uniform sampler2D tMap2;
 uniform float uAnimate;
-uniform sampler2D tMap;
 
 varying vec2 vUv;
 
-#pragma glslify: rangeF = require('../../shaders/modules/rangeF.glsl')
-
 
 void main() {
-    float ratio = uSize.x / uSize.y;
-    vec2 squaredUv = vec2(
-        vUv.x,
-        vUv.y / ratio
-    );
+    vec4 texture1 = texture2D(tMap1, vUv);
+    vec4 texture2 = texture2D(tMap2, vUv);
 
-    vec2 squaredCenter = vec2(
-        .5,
-        .5 / ratio
-    );
+    float transition = step(0.5, sin(vUv.y * 9. + uAnimate) * .03 + vUv.x);
 
-    //////// Ripples
-    float rippleScale = uSignal * 100.;
+    vec4 finalColor = mix(texture1, texture2, transition);
 
-    float circle = distance( squaredUv, squaredCenter );
-    float ripples = abs( sin( (circle * rippleScale) + uAnimate) );
-    float blackGradient = uSignal * .75 - distance( squaredUv, squaredCenter ) * .5;
-    ripples = clamp(ripples - blackGradient, 0., 1.);
-
-
-    vec3 color = vec3(ripples);
-    float alpha = uProgress;
-
-    vec4 texture = texture2D(tMap, vUv);
-
-
-    // gl_FragColor = vec4(color, alpha);
-    gl_FragColor = texture;
+    gl_FragColor = finalColor;
 }

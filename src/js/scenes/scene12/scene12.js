@@ -248,7 +248,7 @@ var Scene12 = {
 
         // scene12Controller.uDepth = scene12Debugger.add(material.uniforms.uDepth, 'value').min(-15).max(15).step(0.001).name('uDepth');
         // scene12Controller.uStrength = scene12Debugger.add(material.uniforms.uStrength, 'value').min(0).max(1).step(0.00001).name('uStrength');
-        ACEvents.addEventListener('AC_pause', updateStrength);
+        // ACEvents.addEventListener('AC_pause', updateStrength);
 
         // scene12Controller.uThickness = scene12Debugger.add(material.uniforms.uThickness, 'value').min(0.00001).max(0.95).step(0.00001).name('uThickness');
         // midiEvents.addEventListener('K1_change', updateThickness);

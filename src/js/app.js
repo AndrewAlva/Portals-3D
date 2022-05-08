@@ -174,7 +174,14 @@ var App = {
 
             //  Scene updatee
             scene.update();
-                
+
+            // draw render target scene to render target
+            renderer.setRenderTarget(Scene13.RT1);
+            renderer.render(Scene13.rtScene1, camera);
+            renderer.setRenderTarget(Scene13.RT2);
+            renderer.render(Scene13.rtScene2, camera);
+            renderer.setRenderTarget(null);
+
             // Render
             renderer.render(scene, camera)
 
