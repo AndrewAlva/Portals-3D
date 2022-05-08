@@ -25,7 +25,7 @@ var Scene13 = {
          */
         _this.loadingManager =  new THREE.LoadingManager()
         _this.textureLoader = new THREE.TextureLoader(_this.loadingManager)
-        _this.texture1 = _this.textureLoader.load('img/_assets/uv.jpg')
+        _this.texture1 = _this.textureLoader.load('_assets/uv.jpg')
 
 
         /**
