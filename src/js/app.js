@@ -24,6 +24,7 @@ import { Scene10 } from './scenes/scene10/scene10.js';
 import { Scene11 } from './scenes/scene11/scene11.js';
 import { Scene12 } from './scenes/scene12/scene12.js';
 import { Scene13 } from './scenes/scene13/scene13.js';
+import { Scene14 } from './scenes/scene14/scene14.js';
 
 var App = {
     init: async function({ enableVR = false } = {}) {
@@ -81,6 +82,7 @@ var App = {
         Scene11.init();
         await Scene12.init();
         Scene13.init();
+        Scene14.init();
 
         // Scene Manager
         // var scene = SceneEx.scene;
@@ -96,7 +98,8 @@ var App = {
         // var scene = Scene10.scene;
         // var scene = Scene11.scene;
         // var scene = Scene12.scene;
-        var scene = Scene13.scene;
+        // var scene = Scene13.scene;
+        var scene = Scene14.scene;
 
 
         /**
@@ -178,6 +181,7 @@ var App = {
             // draw render target scene to render target
             renderer.setRenderTarget(Scene13.RT1);
             renderer.render(Scene13.rtScene1, camera);
+
             renderer.setRenderTarget(Scene13.RT2);
             renderer.render(Scene13.rtScene2, camera);
             renderer.setRenderTarget(null);

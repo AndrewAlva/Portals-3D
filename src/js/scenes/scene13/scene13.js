@@ -19,7 +19,7 @@ var Scene13 = {
          * GUI
          */
         _this.Debugger = window.Utils.gui.addFolder('13. Render Target logic');
-        _this.Debugger.open();
+        // _this.Debugger.open();
         _this.controller = {};
 
         // Scene animation speed
