@@ -10,6 +10,8 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js'
 
+import { SceneController } from './controllers/SceneController.js';
+
 import { SceneEx } from './scenes/sceneExample.js';
 import { Scene1 } from './scenes/scene1/scene1.js';
 import { Scene2 } from './scenes/scene2/scene2.js';
@@ -29,6 +31,7 @@ import { Scene14 } from './scenes/scene14/scene14.js';
 var App = {
     init: async function({ enableVR = false } = {}) {
         var _this = this;
+        Global.events = new Reactor();
 
         window.AC = new AudioController();
         await AC.init({
@@ -68,38 +71,27 @@ var App = {
         /**
          * Scenes initializing
          */
-        SceneEx.init();
-        Scene1.init();
-        Scene2.init();
-        Scene3.init();
-        Scene4.init();
-        Scene5.init();
-        Scene6.init();
-        Scene7.init();
-        Scene8.init();
-        Scene9.init();
-        Scene10.init();
-        Scene11.init();
-        await Scene12.init();
-        Scene13.init();
-        Scene14.init();
+        SceneController.init();
+        await SceneController.registerMultipleScenes([
+            SceneEx,
+            Scene1,
+            Scene2,
+            Scene3,
+            Scene4,
+            Scene5,
+            Scene6,
+            Scene7,
+            Scene8,
+            Scene9,
+            Scene10,
+            Scene11,
+            Scene12,
+            Scene13,
+            Scene14
+        ]);
 
-        // Scene Manager
-        // var scene = SceneEx.scene;
-        // var scene = Scene1.scene;
-        // var scene = Scene2.scene;
-        // var scene = Scene3.scene;
-        // var scene = Scene4.scene;
-        // var scene = Scene5.scene;
-        // var scene = Scene6.scene;
-        // var scene = Scene7.scene;
-        // var scene = Scene8.scene;
-        // var scene = Scene9.scene;
-        // var scene = Scene10.scene;
-        // var scene = Scene11.scene;
-        // var scene = Scene12.scene;
-        // var scene = Scene13.scene;
-        var scene = Scene14.scene;
+        SceneController.activateScene(Scene14);
+        var scene = SceneController.getActiveScene();
 
 
         /**

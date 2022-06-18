@@ -10,6 +10,8 @@ const heightMapURL = 'https://i.imgur.com/dMYV4cf.jpeg';
 const displacementMapURL = 'https://i.imgur.com/L1pqRg9.jpeg';
 
 var Scene12 = {
+    promise: Promise.create(),
+
     init: async function () {
         var _this = this;
         const textureLoader = new THREE.TextureLoader()
@@ -417,6 +419,12 @@ var Scene12 = {
                 })
             })
         }
+
+        _this.promise.resolve();
+    },
+
+    ready: async function() {
+        return this.promise;
     }
 }
 
