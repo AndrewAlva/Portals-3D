@@ -78,7 +78,7 @@ const generateGalaxy = () => {
         vertexShader: sceneVertexShader,
         fragmentShader: sceneFragmentShader,
         uniforms: {
-            uSize: { value: parameters.size * renderer.getPixelRatio() },
+            uSize: { value: parameters.size * Renderer.getPixelRatio() },
             uAnimate: { value: 0 },
 
             // uSpin: { value: 5.75 },

@@ -1,15 +1,19 @@
 import '../css/app.css'
-import './math.js'
-import './utils.js'
-import './Utils3D.js'
-import './events.js'
+import './core/helpers.js'
+import './core/math.js'
+import './core/Utils.js'
+import './core/Utils3D.js'
+import './core/events.js'
+import { Render } from './core/Render'
 
 import { MIDI } from './midi.js'
 import { AudioController } from './AudioController.js'
+
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js'
 
+import { RenderController } from './controllers/RenderController'
 import { SceneController } from './controllers/SceneController.js';
 
 import { SceneEx } from './scenes/sceneExample.js';
@@ -32,6 +36,7 @@ var App = {
     init: async function({ enableVR = false } = {}) {
         var _this = this;
         Global.events = new Reactor();
+        Render.init();
 
         window.AC = new AudioController();
         await AC.init({
@@ -53,19 +58,13 @@ var App = {
         globalDebugger.open();
 
         // Canvas
-        const canvas = document.querySelector('canvas.webgl')
+        Global.CANVAS = document.querySelector('canvas.webgl')
 
 
         /**
          * Renderer
          */
-        window.renderer = new THREE.WebGLRenderer({
-            canvas: canvas,
-            antialias: true,
-            // alpha: true
-        })
-        renderer.setSize(Utils.screenSize.width, Utils.screenSize.height)
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        RenderController.init();
         
 
         /**
@@ -128,7 +127,7 @@ var App = {
         // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
 
         // Controls
-        const controls = new OrbitControls(camera, canvas)
+        const controls = new OrbitControls(camera, Global.CANVAS)
         controls.enableDamping = true
         // controls.autoRotate = true
 
@@ -138,10 +137,6 @@ var App = {
             // Update camera
             camera.aspect = Utils.screenSize.width / Utils.screenSize.height
             camera.updateProjectionMatrix()
-
-            // Update renderer
-            renderer.setSize(Utils.screenSize.width, Utils.screenSize.height)
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         };
 
         Utils.resizeCallbacks.push(onResize);
@@ -155,7 +150,7 @@ var App = {
         const tick = (e) =>
         {
             /* PETE FEEDBACK to review */
-            // Grab poses from 'e', or by 'window.renderer.xr'
+            // Grab poses from 'e', or by 'Renderer.xr'
             // check documentation
 
             // Utils update
@@ -171,41 +166,42 @@ var App = {
             scene.update();
 
             // draw render target scene to render target
-            renderer.setRenderTarget(Scene13.RT1);
-            renderer.render(Scene13.rtScene1, camera);
+            Renderer.setRenderTarget(Scene13.RT1);
+            Renderer.render(Scene13.rtScene1, camera);
 
-            renderer.setRenderTarget(Scene13.RT2);
-            renderer.render(Scene13.rtScene2, camera);
-            renderer.setRenderTarget(null);
+            Renderer.setRenderTarget(Scene13.RT2);
+            Renderer.render(Scene13.rtScene2, camera);
+            Renderer.setRenderTarget(null);
 
             // Render
-            renderer.render(scene, camera)
+            Renderer.render(scene, camera)
 
-            // Call tick again on the next frame
-            if (!renderer.xr.enabled) {
-                window.requestAnimationFrame(tick)
-            }
+            // // Call tick again on the next frame
+            // if (!Renderer.xr.enabled) {
+            //     window.requestAnimationFrame(tick)
+            // }
 
             // Save frame CCapture
-            capturer.capture( canvas );
+            capturer.capture( Global.CANVAS );
         }
 
         
         /**
          * Init VR
          */
-        if (enableVR) {
-            document.body.appendChild( VRButton.createButton( window.renderer ) );
-            window.renderer.xr.enabled = true;
-            window.renderer.setAnimationLoop(tick);
+        if (!enableVR) {
+            Render.start(tick);
+        } else {
+            document.body.appendChild( VRButton.createButton( Renderer ) );
+            Renderer.xr.enabled = true;
+            Renderer.setAnimationLoop(tick);
 
             /* PETE FEEDBACK to review */
-            window.renderer.xr.addEventListener('sessionstart', (e) => {
+            Renderer.xr.addEventListener('sessionstart', (e) => {
                 console.log(e.camera);
             });
         }
 
-        tick();
     },
 }
 

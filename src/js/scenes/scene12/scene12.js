@@ -21,7 +21,7 @@ var Scene12 = {
          */
          _this.scene = new THREE.Scene()
          // Environment
-         const envMap = await loadHDRI(hdriURL, window.renderer)
+         const envMap = await loadHDRI(hdriURL, Renderer)
             //  const envMap = await loadTexture(hdriURL)
             //  envMap.mapping = THREE.EquirectangularReflectionMapping
             //  const sun = new THREE.DirectionalLight('white', 0.1)
@@ -31,8 +31,8 @@ var Scene12 = {
 
         //  this.scene.environment = this.scene.background = envMap
          this.scene.environment = envMap
-         renderer.toneMapping = THREE.ACESFilmicToneMapping
-         renderer.outputEncoding = THREE.sRGBEncoding
+         Renderer.toneMapping = THREE.ACESFilmicToneMapping
+         Renderer.outputEncoding = THREE.sRGBEncoding
  
          // Load heightmap texture
          const heightMap = await loadTexture(heightMapURL)
@@ -399,7 +399,7 @@ var Scene12 = {
         function loadHDRI(url, renderer) {
             return new Promise(resolve => {
                 const loader = new RGBELoader()
-                const pmremGenerator = new THREE.PMREMGenerator(renderer)
+                const pmremGenerator = new THREE.PMREMGenerator(Renderer)
                 loader.load(url, (texture) => {
                     const envMap = pmremGenerator.fromEquirectangular(texture).texture
                     texture.dispose()

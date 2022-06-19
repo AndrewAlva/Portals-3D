@@ -81,7 +81,7 @@ const generateGalaxy = () => {
         fragmentShader: sceneFragmentShader,
         uniforms: {
             uTotal: { value: parameters.count },
-            uSize: { value: parameters.size * renderer.getPixelRatio() },
+            uSize: { value: parameters.size * Renderer.getPixelRatio() },
             uSides: { value: parameters.sides },
             uAnimate: { value: 0 },
 
