@@ -131,7 +131,7 @@ var Scene10 = {
             /** Raycaster */
             raycaster.setFromCamera(
                 Utils.cursor.glPos,
-                window.cam
+                World.CAMERA
             );
             const intersects = raycaster.intersectObjects(objectsToTest);
 

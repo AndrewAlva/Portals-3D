@@ -1,10 +1,19 @@
-var Render = {
+import * as THREE from 'three'
+
+window.Render = {
     _render: [],
     isPaused: false,
+    clock: null,
 
     init: function() {
         var _this = this;
+        _this.initClock();
         requestAnimationFrame( _this.render.bind(_this) )
+    },
+
+
+    initClock: function() {
+        this.clock = new THREE.Clock();
     },
 
     render: function() {
@@ -19,6 +28,8 @@ var Render = {
 
             callback();
         }
+
+        Utils.elapsedTime = _this.clock.getElapsedTime();
 
         if (!_this.isPaused) requestAnimationFrame( _this.render.bind(_this) );
     },
@@ -44,5 +55,3 @@ var Render = {
         this._render.remove(callback);
     },
 }
-
-export { Render };

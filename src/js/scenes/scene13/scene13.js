@@ -1,7 +1,4 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import sceneVertex from './scene13Vertex.glsl'
-import sceneFragment from './scene13Fragment.glsl'
 
 import rt1Vertex from './rt1Vertex.glsl'
 import rt1Fragment from './rt1Fragment.glsl'
@@ -11,9 +8,6 @@ import rt2Fragment from './rt2Fragment.glsl'
 var Scene13 = {
     init: function() {
         var _this = this;
-
-        // Canvas
-        const canvas = document.querySelector('canvas.webgl')
 
         /**
          * GUI
@@ -38,19 +32,10 @@ var Scene13 = {
 
         
         /**
-         * Render Targets
+         * Scenes
          */
-        var rtWidth = Utils.screenSize.width;
-        var rtHeight = Utils.screenSize.height;
-        _this.RT1 = new THREE.WebGLRenderTarget(rtWidth, rtHeight, {
-            depthBuffer: false
-        });
-        _this.RT2 = new THREE.WebGLRenderTarget(rtWidth, rtHeight, {
-            depthBuffer: false
-        });
-
-        _this.rtScene1 = new THREE.Scene();
-        _this.rtScene2 = new THREE.Scene();
+        _this.rt1Scene = new THREE.Scene();
+        _this.rt2Scene = new THREE.Scene();
 
         // const rtGeom1 = new THREE.PlaneGeometry(2, 0.5, 300, 300)
         const rtGeom1 = new THREE.TorusKnotGeometry(2, .7, 900, 60)
@@ -91,8 +76,8 @@ var Scene13 = {
         const rtMesh1 = new THREE.Mesh(rtGeom1, rtMaterial1)
         const rtMesh2 = new THREE.Mesh(rtGeom1, rtMaterial2)
 
-        _this.rtScene1.add(rtMesh1)
-        _this.rtScene2.add(rtMesh2)
+        _this.rt1Scene.add(rtMesh1)
+        _this.rt2Scene.add(rtMesh2)
 
         _this.controller.uSignal = _this.Debugger.add(rtMaterial1.uniforms.uSignal, 'value').min(0).max(1).step(0.00001).name('uSignal');
         ACEvents.addEventListener('AC_pause', resetSignal);
@@ -103,48 +88,12 @@ var Scene13 = {
 
 
         /**
-         * Scene
-         */
-        _this.scene = new THREE.Scene()
-
-
-        /**
-         * Objects
-         */
-        const geometry = Utils3D.getQuad();
-        
-        const material = new THREE.ShaderMaterial({
-            vertexShader: sceneVertex,
-            fragmentShader: sceneFragment,
-            transparent: true,
-            depthTest: false,
-            // blending: THREE.AdditiveBlending,
-            uniforms: {
-                tMap1: { value: _this.RT1.texture },
-                tMap2: { value: _this.RT2.texture },
-                uAnimate: { value: 0 },
-            },
-        });
-
-        const mesh = new THREE.Mesh(geometry, material)
-        _this.scene.add(mesh)
-
-
-        /**
-         * Resizing
-         */
-        function handleResize() {
-        }
-
-        Utils.resizeCallbacks.push(handleResize);
-
-
-        /**
          * Animations
          */
         let animate = 0;
         let drumLerping = 0;
-        _this.scene.update = function() {
+
+        _this.rt1Scene.update = function() {
             let time = Utils.elapsedTime;
 
             _this.controller.currentSpeed = Math.damp(
@@ -153,7 +102,6 @@ var Scene13 = {
                 _this.controller.lerpSpeed,
                 time);
             animate += _this.controller.currentSpeed * 0.1;
-            material.uniforms.uAnimate.value = animate;
             rtMaterial1.uniforms.uAnimate.value = animate;
             rtMaterial2.uniforms.uAnimate.value = animate;
 

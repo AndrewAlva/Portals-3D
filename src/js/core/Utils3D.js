@@ -12,4 +12,34 @@ import { BufferGeometry, BufferAttribute } from 'three/build/three.module.js'
 
         return geometry;
     }
+
+    Utils3D.quadVertexShader = `
+        varying vec2 vUv;
+
+        void main()
+        {
+            gl_Position = vec4(position, 1.0);
+            vUv = uv;
+        }
+    `;
+
+    Utils3D.baseCompositorFragmentShader = `
+        uniform sampler2D tMap1;
+        uniform sampler2D tMap2;
+        uniform float uTransition;
+        
+        varying vec2 vUv;
+        
+        
+        void main() {
+            vec4 texture1 = texture2D(tMap1, vUv);
+            vec4 texture2 = texture2D(tMap2, vUv);
+        
+            float transition = step(1. - uTransition, vUv.x);
+        
+            vec4 finalColor = mix(texture1, texture2, transition);
+        
+            gl_FragColor = finalColor;
+        }
+    `;
 })();

@@ -4,16 +4,16 @@ import './core/math.js'
 import './core/Utils.js'
 import './core/Utils3D.js'
 import './core/events.js'
-import { Render } from './core/Render'
+import './core/World.js'
+import './core/Render'
+import './controllers/RenderController';
 
 import { MIDI } from './midi.js'
 import { AudioController } from './AudioController.js'
 
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js'
 
-import { RenderController } from './controllers/RenderController'
 import { SceneController } from './controllers/SceneController.js';
 
 import { SceneEx } from './scenes/sceneExample.js';
@@ -36,7 +36,9 @@ var App = {
     init: async function({ enableVR = false } = {}) {
         var _this = this;
         Global.events = new Reactor();
+        World.init();
         Render.init();
+        RenderController.init({enableVR});
 
         window.AC = new AudioController();
         await AC.init({
@@ -52,100 +54,33 @@ var App = {
 
     start: async function({enableVR}) {
         /**
-         * GUI
-         */
-        var globalDebugger = Utils.gui.addFolder('Global');
-        globalDebugger.open();
-
-        // Canvas
-        Global.CANVAS = document.querySelector('canvas.webgl')
-
-
-        /**
-         * Renderer
-         */
-        RenderController.init();
-        
-
-        /**
          * Scenes initializing
          */
         SceneController.init();
         await SceneController.registerMultipleScenes([
             SceneEx,
-            Scene1,
-            Scene2,
-            Scene3,
-            Scene4,
-            Scene5,
-            Scene6,
-            Scene7,
-            Scene8,
-            Scene9,
-            Scene10,
-            Scene11,
-            Scene12,
+            // Scene1,
+            // Scene2,
+            // Scene3,
+            // Scene4,
+            // Scene5,
+            // Scene6,
+            // Scene7,
+            // Scene8,
+            // Scene9,
+            // Scene10,
+            // Scene11,
+            // Scene12,
             Scene13,
-            Scene14
+            // Scene14
         ]);
 
-        SceneController.activateScene(Scene14);
-        var scene = SceneController.getActiveScene();
-
-
-        /**
-         * Camera
-         */
-        const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
-        camera.position.z = 2
-        // scene.add(camera) // Apparently this isn't needed
-        window.cam = camera;
-
-        const frontCamera = {};
-        frontCamera.quaternion = new THREE.Quaternion().copy(camera.quaternion);
-        frontCamera.pos = new THREE.Vector3().copy(camera.position);
-        camera.currentPosition = 'frontCamera';
-
-        const highAngleCamera = {};
-        highAngleCamera.quaternion = new THREE.Quaternion().setFromAxisAngle( new THREE.Vector3(-0.1151, 0.881, 0.2778), 0.365);
-        highAngleCamera.pos = new THREE.Vector3(3.9486, 3.9486, -3.9486);
-
-        Utils.debugger.toggleCamera = function() {
-            if (camera.currentPosition == 'frontCamera') {
-                camera.quaternion.copy(highAngleCamera.quaternion);
-                camera.position.copy(highAngleCamera.pos);
-                camera.currentPosition = 'highAngleCamera';
-            } else {
-                camera.quaternion.copy(frontCamera.quaternion);
-                camera.position.copy(frontCamera.pos);
-                camera.currentPosition = 'frontCamera';
-            }
-        }
-        // Utils.debugger.toggleCamera();
-
-        globalDebugger.add(Utils.debugger, 'toggleCamera');
-        // midiEvents.addEventListener('P1_push', Utils.debugger.toggleCamera)
-
-        // Controls
-        const controls = new OrbitControls(camera, Global.CANVAS)
-        controls.enableDamping = true
-        // controls.autoRotate = true
-
-
-        // Resizing
-        function onResize() {
-            // Update camera
-            camera.aspect = Utils.screenSize.width / Utils.screenSize.height
-            camera.updateProjectionMatrix()
-        };
-
-        Utils.resizeCallbacks.push(onResize);
-
+        SceneController.activateScene(Scene13);
+        window.SC = SceneController;
 
         /**
          * Animate
          */
-        const clock = new THREE.Clock();
 
         const tick = (e) =>
         {
@@ -153,39 +88,17 @@ var App = {
             // Grab poses from 'e', or by 'Renderer.xr'
             // check documentation
 
-            // Utils update
-            Utils.elapsedTime = clock.getElapsedTime();
-                
-            // Update controls
-            controls.update()
 
             // Update audio input
             AC.analyserNode.getFloatFrequencyData(AC.frequencyData);
 
-            //  Scene updatee
-            scene.update();
 
-            // draw render target scene to render target
-            Renderer.setRenderTarget(Scene13.RT1);
-            Renderer.render(Scene13.rtScene1, camera);
-
-            Renderer.setRenderTarget(Scene13.RT2);
-            Renderer.render(Scene13.rtScene2, camera);
-            Renderer.setRenderTarget(null);
-
-            // Render
-            Renderer.render(scene, camera)
-
-            // // Call tick again on the next frame
-            // if (!Renderer.xr.enabled) {
-            //     window.requestAnimationFrame(tick)
-            // }
-
+            //////////////////////
             // Save frame CCapture
             capturer.capture( Global.CANVAS );
         }
 
-        
+
         /**
          * Init VR
          */

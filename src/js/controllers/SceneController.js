@@ -38,18 +38,35 @@ var SceneController = {
 
         let mode = typeof scene;
         let newSceneID = (mode == 'number') ? scene : _this.scenes.indexOf(scene);
-        if (!newSceneID) return console.error('Scene passed has not been registered, run SceneController.registerScenes(your_scene) first');
+        if (newSceneID < 0 || newSceneID >= _this.scenes.length) return console.error('Scene passed has not been registered, run SceneController.registerScenes(your_scene) first');
         _this.currentID = newSceneID;
         _this.activeScene = _this.scenes[_this.currentID];
+        
+        RT1.scene = _this.activeScene.rt1Scene;
+        RT1.enabled = true;
+
+        if (_this.activeScene.rt2Scene) {
+            RT2.scene = _this.activeScene.rt2Scene;
+            RT2.enabled = true;
+            RT2.cleared = false;
+        } else {
+            RT2.enabled = false;
+        }
 
         // let p = _this.scenes[_this.currentID].animateIn();
         // return p;
     },
 
-    getActiveScene: function() {
+    goToNextScene: function() {
         var _this = this;
-        return _this.scenes[_this.currentID].scene;
-    },
+
+        const index = _this.currentID + 1;
+        if (index >= _this.scenes.length) {
+            _this.activateScene(0)
+        } else {
+            _this.activateScene(index)
+        }
+    }
 
 
 }

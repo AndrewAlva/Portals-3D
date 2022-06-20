@@ -31,7 +31,7 @@ var SceneEx = {
         /**
          * Scene
          */
-        _this.scene = new THREE.Scene()
+        _this.rt1Scene = new THREE.Scene()
 
 
         /**
@@ -65,7 +65,7 @@ var SceneEx = {
 
 
         const mesh = new THREE.Mesh(geometry, material)
-        _this.scene.add(mesh)
+        _this.rt1Scene.add(mesh)
 
 
         /**
@@ -73,8 +73,8 @@ var SceneEx = {
          */
         const camera = new THREE.PerspectiveCamera(75, Utils.screenSize.width / Utils.screenSize.height)
         camera.position.z = 9
-        _this.scene.add(camera)
-        _this.scene.myCamera = camera;
+        _this.rt1Scene.add(camera)
+        _this.rt1Scene.myCamera = camera;
 
 
         /**
@@ -82,7 +82,7 @@ var SceneEx = {
          */
         let animate = 0;
         let drumLerping = 0;
-        _this.scene.update = function() {
+        _this.rt1Scene.update = function() {
             let time = Utils.elapsedTime;
 
             _this.controller.currentSpeed = Math.damp(
