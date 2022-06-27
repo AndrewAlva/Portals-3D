@@ -6,8 +6,6 @@ import rt2Vertex from './rt2Vertex.glsl'
 import rt2Fragment from './rt2Fragment.glsl'
 
 var Scene13 = {
-    active: false,
-
     init: function() {
         var _this = this;
 
@@ -112,12 +110,14 @@ var Scene13 = {
             Utils.resizeCallbacks.push( _this.onResize );
 
             Render.start( _this.update, Render.BEFORE_RENDER );
+            _this.Debugger.open();
         }
 
         _this.deactivate = function() {
             _this.active = false;
             Render.stop( _this.update );
             Utils.resizeCallbacks.remove( _this.onResize );
+            _this.Debugger.close();
         }
 
 

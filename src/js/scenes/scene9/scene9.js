@@ -34,6 +34,14 @@ var Scene9 = {
 
 
         /**
+         * Render Targets
+         */
+        _this.RT1 = new THREE.WebGLRenderTarget(Utils.screenSize.width, Utils.screenSize.height, {
+            depthBuffer: false
+        });
+
+
+        /**
          * Scene
          */
         _this.scene = new THREE.Scene()
@@ -92,12 +100,43 @@ var Scene9 = {
         _this.scene.myCamera = camera;
 
 
+
+        /**
+         * Renderer helper functions
+         */
+        _this.activate = function() {
+            _this.active = true;
+            World.COMPOSITOR.material.uniforms.tMap1.value = _this.RT1.texture;
+            World.COMPOSITOR.material.uniforms.tMap2.value = _this.RT1.texture;
+            _this.onResize();
+            Utils.resizeCallbacks.push( _this.onResize );
+
+            Render.start( _this.update, Render.BEFORE_RENDER );
+            _this.Debugger.open();
+        }
+
+        _this.deactivate = function() {
+            _this.active = false;
+            Render.stop( _this.update );
+            Utils.resizeCallbacks.remove( _this.onResize );
+            _this.Debugger.close();
+        }
+
+
+        /**
+         * Resizing
+         */
+        _this.onResize = function() {
+            _this.RT1.setSize(Utils.screenSize.width, Utils.screenSize.height);
+        }
+
+
         /**
          * Animations
          */
         let animate = 0;
         let drumLerping = 0;
-        _this.scene.update = function() {
+        _this.update = function() {
             let time = Utils.elapsedTime;
 
             _this.controller.currentSpeed = Math.damp(
@@ -126,6 +165,12 @@ var Scene9 = {
                 _this.controller.uMixer.object.value = drumLerping;
                 _this.controller.uMixer.updateDisplay();
             }
+
+            // draw render target scene into render target
+            Renderer.setRenderTarget(_this.RT1);
+            Renderer.render(_this.scene, World.CAMERA);
+
+            Renderer.setRenderTarget(null);
         }
 
 

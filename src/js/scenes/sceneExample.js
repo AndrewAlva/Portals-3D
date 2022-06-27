@@ -100,12 +100,14 @@ var SceneEx = {
             Utils.resizeCallbacks.push( _this.onResize );
 
             Render.start( _this.update, Render.BEFORE_RENDER );
+            _this.Debugger.open();
         }
 
         _this.deactivate = function() {
             _this.active = false;
             Render.stop( _this.update );
             Utils.resizeCallbacks.remove( _this.onResize );
+            _this.Debugger.close();
         }
 
 

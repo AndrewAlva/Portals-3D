@@ -19,4 +19,5 @@ void main() {
     vec3 color = uColor * ripples;
 
     gl_FragColor = vec4(color, ripples);
+    // gl_FragColor = vec4(vec3(ripples), square1); // Cube dashed borders
 }
