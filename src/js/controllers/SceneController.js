@@ -39,19 +39,11 @@ var SceneController = {
         let mode = typeof scene;
         let newSceneID = (mode == 'number') ? scene : _this.scenes.indexOf(scene);
         if (newSceneID < 0 || newSceneID >= _this.scenes.length) return console.error('Scene passed has not been registered, run SceneController.registerScenes(your_scene) first');
+        _this.activeScene && _this.activeScene.deactivate();
+
         _this.currentID = newSceneID;
         _this.activeScene = _this.scenes[_this.currentID];
-        
-        RT1.scene = _this.activeScene.rt1Scene;
-        RT1.enabled = true;
-
-        if (_this.activeScene.rt2Scene) {
-            RT2.scene = _this.activeScene.rt2Scene;
-            RT2.enabled = true;
-            RT2.cleared = false;
-        } else {
-            RT2.enabled = false;
-        }
+        _this.activeScene.activate();
 
         // let p = _this.scenes[_this.currentID].animateIn();
         // return p;

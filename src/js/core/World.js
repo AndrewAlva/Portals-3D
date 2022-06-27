@@ -5,6 +5,7 @@ window.World = {
     SCENE: null,
     CAMERA: null,
     CANVAS: null,
+    COMPOSITOR: null, // Quad mesh receiving RTs to display
     CONTROLS: null,
     DEBUGGER: null,
 

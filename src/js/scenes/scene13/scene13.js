@@ -6,6 +6,8 @@ import rt2Vertex from './rt2Vertex.glsl'
 import rt2Fragment from './rt2Fragment.glsl'
 
 var Scene13 = {
+    active: false,
+
     init: function() {
         var _this = this;
 
@@ -31,6 +33,18 @@ var Scene13 = {
         _this.texture1 = _this.textureLoader.load('_assets/uv.jpg')
 
         
+        /**
+         * Render Targets
+         */
+        _this.RT1 = new THREE.WebGLRenderTarget(Utils.screenSize.width, Utils.screenSize.height, {
+            depthBuffer: false
+        });
+        _this.RT2 = new THREE.WebGLRenderTarget(Utils.screenSize.width, Utils.screenSize.height, {
+            depthBuffer: false
+        });
+
+
+
         /**
          * Scenes
          */
@@ -88,12 +102,44 @@ var Scene13 = {
 
 
         /**
+         * Renderer helper functions
+         */
+        _this.activate = function() {
+            _this.active = true;
+            World.COMPOSITOR.material.uniforms.tMap1.value = _this.RT1.texture;
+            World.COMPOSITOR.material.uniforms.tMap2.value = _this.RT2.texture;
+            _this.onResize();
+            Utils.resizeCallbacks.push( _this.onResize );
+
+            Render.start( _this.update, Render.BEFORE_RENDER );
+        }
+
+        _this.deactivate = function() {
+            _this.active = false;
+            Render.stop( _this.update );
+            Utils.resizeCallbacks.remove( _this.onResize );
+        }
+
+
+        /**
+         * Resizing
+         */
+        _this.onResize = function() {
+            _this.RT1.setSize(Utils.screenSize.width, Utils.screenSize.height);
+            _this.RT2.setSize(Utils.screenSize.width, Utils.screenSize.height);
+        }
+
+
+
+        /**
          * Animations
          */
         let animate = 0;
         let drumLerping = 0;
 
-        _this.rt1Scene.update = function() {
+        _this.update = function() {
+            if ( !_this.active ) return;
+
             let time = Utils.elapsedTime;
 
             _this.controller.currentSpeed = Math.damp(
@@ -122,6 +168,15 @@ var Scene13 = {
                 _this.controller.uSignal.object.value = drumLerping;
                 _this.controller.uSignal.updateDisplay();
             }
+
+            // draw render target scene into render target
+            Renderer.setRenderTarget(_this.RT1);
+            Renderer.render(_this.rt1Scene, World.CAMERA);
+
+            Renderer.setRenderTarget(_this.RT2);
+            Renderer.render(_this.rt2Scene, World.CAMERA);
+
+            Renderer.setRenderTarget(null);
         }
 
 
@@ -140,6 +195,8 @@ var Scene13 = {
          * Web Audio API Handlers
          */
         function resetSignal() {
+            if ( !_this.active ) return;
+
             _this.controller.uSignal.object.value = 0;
             _this.controller.uSignal.updateDisplay();
         }
