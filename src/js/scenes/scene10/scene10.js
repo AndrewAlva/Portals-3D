@@ -9,7 +9,7 @@ var Scene10 = {
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('10. Parallax planes');
+        _this.Debugger = window.Utils.gui.addFolder('**10. Gaze + Interact() Planes');
         // _this.Debugger.open();
         _this.controller = {};
 
@@ -80,7 +80,7 @@ var Scene10 = {
             return new THREE.ShaderMaterial({
                 vertexShader: sceneVertex,
                 fragmentShader: sceneFragment,
-                side: THREE.DoubleSide,
+                side: THREE.FrontSide,
                 transparent: true,
                 depthTest: false,
                 uniforms: {
@@ -108,8 +108,17 @@ var Scene10 = {
         }
         updateMeshesScale();
 
+        _this.controller.signal = 1;
+        _this.controller.uSignal = _this.Debugger.add(_this.controller, 'signal').min(1).max(3).step(0.01).name('Signal').onFinishChange(updateMeshesSignal);
+        function updateMeshesSignal() {
+            equillsMeshes.forEach(equill => {
+                equill.material.uniforms.uSignal.value = _this.controller.signal;
+            });
+        }
+        updateMeshesSignal();
+
         // _this.controller.uSignal = _this.Debugger.add(material.uniforms.uSignal, 'value').min(0).max(1).step(0.00001).name('uSignal');
-        // ACEvents.addEventListener('AC_pause', resetSignal);
+        ACEvents.addEventListener('AC_pause', resetSignal);
 
         // _this.controller.uProgress = _this.Debugger.add(material.uniforms.uProgress, 'value').min(0).max(1).step(0.00001).name('uProgress');
         // midiEvents.addEventListener('K1_change', updateProgress);
@@ -250,8 +259,10 @@ var Scene10 = {
                 // Vertex updates
                 
                 // Fragment updates
-                _this.controller.uSignal.object.value = drumLerping;
+                let lerpedSignal = Math.range(drumLerping, 0, 0.6, 1, 3, true);
+                _this.controller.signal = lerpedSignal;
                 _this.controller.uSignal.updateDisplay();
+                updateMeshesSignal();
             }
 
             // draw render target scene into render target
@@ -289,8 +300,9 @@ var Scene10 = {
          * Web Audio API Handlers
          */
         function resetSignal() {
-            _this.controller.uSignal.object.value = 0;
+            _this.controller.uSignal.object.signal = 1;
             _this.controller.uSignal.updateDisplay();
+            updateMeshesSignal();
         }
     }
 }

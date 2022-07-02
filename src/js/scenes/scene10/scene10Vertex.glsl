@@ -32,7 +32,7 @@ void main()
     blackGradient = 1. - pow(blackGradient, 2. + blackGradient * blackGradient);
     blackGradient = clamp(blackGradient, 0., 10.);
 
-    float ripples = abs( sin( (blackGradient * 10.) + uAnimate) );
+    float ripples = abs( sin( (blackGradient * 10. * uSignal) + uAnimate) );
 
     float radialMask = 1. - distance( squaredUv, squaredHover ) * 1.05;
     radialMask = clamp(radialMask, 0., 10.);
