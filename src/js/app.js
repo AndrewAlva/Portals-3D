@@ -57,18 +57,28 @@ var App = {
          * Scenes initializing
          */
         SceneController.init();
+
+        /* Tools scenes */
         await SceneController.registerMultipleScenes([
             SceneEx,
+            Scene8,
+            Scene9,
+            Scene10
+        ]);
+
+        /* Unfinished scenes (not audio hooked) */
+        await SceneController.registerMultipleScenes([
             Scene1,
             Scene2,
-            Scene3,
+            Scene3
+        ]);
+
+        /* Visual scenes */
+        await SceneController.registerMultipleScenes([
             Scene4,
             Scene5,
             Scene6,
             Scene7,
-            Scene8,
-            Scene9,
-            Scene10,
             Scene11,
             Scene12,
             Scene13,

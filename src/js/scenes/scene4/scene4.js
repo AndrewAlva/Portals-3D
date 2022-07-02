@@ -9,7 +9,7 @@ var Scene4 = {
         /**
          * GUI
          */
-        const scene4Debugger = window.Utils.gui.addFolder('Scene4');
+        const scene4Debugger = window.Utils.gui.addFolder('4. Plane Ripples Vertex');
         // scene4Debugger.open();
         const scene4Controller = {};
 

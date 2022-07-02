@@ -9,7 +9,7 @@ var Scene5 = {
         /**
          * GUI
          */
-        const scene5Debugger = window.Utils.gui.addFolder('Scene5');
+        const scene5Debugger = window.Utils.gui.addFolder('5. Cube Ripples Vertex');
         // scene5Debugger.open();
         const scene5Controller = {};
 

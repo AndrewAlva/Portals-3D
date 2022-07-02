@@ -112,7 +112,7 @@ var Scene7 = {
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('Scene7');
+        _this.Debugger = window.Utils.gui.addFolder('7. Galaxy Vortex to Square');
         // _this.Debugger.open();
         _this.controller = {};
 

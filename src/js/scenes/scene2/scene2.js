@@ -9,7 +9,7 @@ var Scene2 = {
         /**
          * GUI
          */
-        const scene2Debugger = window.Utils.gui.addFolder('Scene2');
+        const scene2Debugger = window.Utils.gui.addFolder('u2. Sphere ripples');
         // scene2Debugger.open();
         const scene2Controller = {};
 

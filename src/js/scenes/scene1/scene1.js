@@ -9,7 +9,7 @@ var Scene1 = {
         /**
          * GUI
          */
-        const scene1Debugger = window.Utils.gui.addFolder('Scene1');
+        const scene1Debugger = window.Utils.gui.addFolder('u1. Tesseract ripples');
         // scene1Debugger.open();
         const scene1Controller = {};
 

@@ -11,7 +11,7 @@ var SceneEx = {
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('SceneEx');
+        _this.Debugger = window.Utils.gui.addFolder('**0. Scene Example');
         // _this.Debugger.open();
         _this.controller = {};
 

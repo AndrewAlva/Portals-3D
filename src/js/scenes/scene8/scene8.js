@@ -9,7 +9,7 @@ var Scene8 = {
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('Scene8');
+        _this.Debugger = window.Utils.gui.addFolder('**8. Level Mask transition');
         // _this.Debugger.open();
         _this.controller = {};
 
