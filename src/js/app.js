@@ -59,19 +59,20 @@ var App = {
         SceneController.init();
 
         /* Tools scenes */
-        await SceneController.registerMultipleScenes([
-            SceneEx,
-            Scene8,
-            Scene9,
-            Scene10
-        ]);
+            // await SceneController.registerMultipleScenes([
+            //     SceneEx,
+            //     Scene8,
+            //     Scene9,
+            //     Scene10,
+            //     Scene14
+            // ]);
 
         /* Unfinished scenes (not audio hooked) */
-        await SceneController.registerMultipleScenes([
-            Scene1,
-            Scene2,
-            Scene3
-        ]);
+            // await SceneController.registerMultipleScenes([
+            //     Scene1,
+            //     Scene2,
+            //     Scene3
+            // ]);
 
         /* Visual scenes */
         await SceneController.registerMultipleScenes([
@@ -80,12 +81,11 @@ var App = {
             Scene6,
             Scene7,
             Scene11,
-            Scene12,
             Scene13,
-            Scene14
+            Scene12,
         ]);
 
-        SceneController.activateScene(Scene14);
+        SceneController.activateScene(Scene13);
         window.SC = SceneController;
 
         /**

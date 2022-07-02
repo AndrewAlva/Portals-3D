@@ -10,7 +10,7 @@ var Scene14 = {
         /**
          * GUI
          */
-        _this.Debugger = window.Utils.gui.addFolder('14. Rainbow transition');
+        _this.Debugger = window.Utils.gui.addFolder('**14. Rainbow transition');
         // _this.Debugger.open();
         _this.controller = {};
 
