@@ -72,7 +72,7 @@ var SceneEx = {
         ACEvents.addEventListener('AC_pause', resetSignal);
 
         _this.controller.uProgress = _this.Debugger.add(material.uniforms.uProgress, 'value').min(0).max(1).step(0.00001).name('uProgress');
-        // midiEvents.addEventListener('K1_change', updateProgress);
+        midiEvents.addEventListener('K1_change', updateProgress);
 
 
         const mesh = new THREE.Mesh(geometry, material)

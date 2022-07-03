@@ -234,7 +234,8 @@ var Scene12 = {
         material.roughness = 0.48
         scene12Debugger.add(material, 'roughness', 0, 1, 0.01).name('Roughness')
         material.envMapIntensity = 0.81
-        scene12Debugger.add(material, 'envMapIntensity', -10, 10, 0.01).name('Env Map Intensity')
+        scene12Controller.envMapIntensity = scene12Debugger.add(material, 'envMapIntensity', -10, 10, 0.01).name('Env Map Intensity')
+        midiEvents.addEventListener('K5_change', updateEnvMap);
 
         scene12Controller.uIterations = scene12Debugger.add(materialUniforms.uIterations, 'value', 0, 64, 1).name('uIterations');
         scene12Controller.uDepth = scene12Debugger.add(materialUniforms.uDepth, 'value', 0, 1, 0.01).name('uDepth');
@@ -422,6 +423,12 @@ var Scene12 = {
         /**
          * MIDI Handlers
          */
+        function updateEnvMap(e) {
+            let val = Math.range(e.velocity, 0, 127, scene12Controller.envMapIntensity.__min, scene12Controller.envMapIntensity.__max);
+            scene12Controller.envMapIntensity.object.envMapIntensity = val;
+            scene12Controller.envMapIntensity.updateDisplay();
+        }
+
         function updateThickness(e) {
             let val = Math.range(e.velocity, 0, 127, 0.00001, 0.95);
             scene12Controller.uThickness.object.value = val;

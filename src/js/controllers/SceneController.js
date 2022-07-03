@@ -58,6 +58,17 @@ var SceneController = {
         } else {
             _this.activateScene(index)
         }
+    },
+
+    goToPrevScene: function() {
+        var _this = this;
+
+        const index = _this.currentID - 1;
+        if (index < 0) {
+            _this.activateScene(_this.scenes.length - 1)
+        } else {
+            _this.activateScene(index)
+        }
     }
 
 

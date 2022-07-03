@@ -1,5 +1,7 @@
 export class MIDI {
-    constructor() {}
+    constructor() {
+        this.setupEvents();
+    }
 
     init(callback) {
         let promise = new Promise( (resolve, reject) => {
@@ -11,53 +13,8 @@ export class MIDI {
                 .then(() => {
                     // Example
                     // console.log(LPD8)
-    
-                    // Set event handlers
-                    window.midiEvents = new Reactor();
-                    midiEvents.registerEvent('P1_change');
-                    midiEvents.registerEvent('P1_push');
-                    midiEvents.registerEvent('P1_release');
-    
-                    midiEvents.registerEvent('P2_change');
-                    midiEvents.registerEvent('P2_push');
-                    midiEvents.registerEvent('P2_release');
-    
-                    midiEvents.registerEvent('P3_change');
-                    midiEvents.registerEvent('P3_push');
-                    midiEvents.registerEvent('P3_release');
-    
-                    midiEvents.registerEvent('P4_change');
-                    midiEvents.registerEvent('P4_push');
-                    midiEvents.registerEvent('P4_release');
-    
-                    midiEvents.registerEvent('P5_change');
-                    midiEvents.registerEvent('P5_push');
-                    midiEvents.registerEvent('P5_release');
-    
-                    midiEvents.registerEvent('P6_change');
-                    midiEvents.registerEvent('P6_push');
-                    midiEvents.registerEvent('P6_release');
-    
-                    midiEvents.registerEvent('P7_change');
-                    midiEvents.registerEvent('P7_push');
-                    midiEvents.registerEvent('P7_release');
-    
-                    midiEvents.registerEvent('P8_change');
-                    midiEvents.registerEvent('P8_push');
-                    midiEvents.registerEvent('P8_release');
-    
-    
-                    midiEvents.registerEvent('K1_change');
-                    midiEvents.registerEvent('K2_change');
-                    midiEvents.registerEvent('K3_change');
-                    midiEvents.registerEvent('K4_change');
-                    midiEvents.registerEvent('K5_change');
-                    midiEvents.registerEvent('K6_change');
-                    midiEvents.registerEvent('K7_change');
-                    midiEvents.registerEvent('K8_change');
-                    
-                    
-                    // Set firing handlers
+
+                    // Hook up firing handlers
                     LPD8.PAD1.change(_ => { midiEvents.dispatchEvent('P1_change', LPD8.PAD1) });
                     LPD8.PAD1.noteOn(_ => { midiEvents.dispatchEvent('P1_push', LPD8.PAD1) });
                     LPD8.PAD1.noteOff(_ => { midiEvents.dispatchEvent('P1_release', LPD8.PAD1) });
@@ -122,6 +79,53 @@ export class MIDI {
 
 
 
+    setupEvents() {
+        // Set event handlers
+        if (window.midiEvents) return;
+
+        window.midiEvents = new Reactor();
+        midiEvents.registerEvent('P1_change');
+        midiEvents.registerEvent('P1_push');
+        midiEvents.registerEvent('P1_release');
+
+        midiEvents.registerEvent('P2_change');
+        midiEvents.registerEvent('P2_push');
+        midiEvents.registerEvent('P2_release');
+
+        midiEvents.registerEvent('P3_change');
+        midiEvents.registerEvent('P3_push');
+        midiEvents.registerEvent('P3_release');
+
+        midiEvents.registerEvent('P4_change');
+        midiEvents.registerEvent('P4_push');
+        midiEvents.registerEvent('P4_release');
+
+        midiEvents.registerEvent('P5_change');
+        midiEvents.registerEvent('P5_push');
+        midiEvents.registerEvent('P5_release');
+
+        midiEvents.registerEvent('P6_change');
+        midiEvents.registerEvent('P6_push');
+        midiEvents.registerEvent('P6_release');
+
+        midiEvents.registerEvent('P7_change');
+        midiEvents.registerEvent('P7_push');
+        midiEvents.registerEvent('P7_release');
+
+        midiEvents.registerEvent('P8_change');
+        midiEvents.registerEvent('P8_push');
+        midiEvents.registerEvent('P8_release');
+
+
+        midiEvents.registerEvent('K1_change');
+        midiEvents.registerEvent('K2_change');
+        midiEvents.registerEvent('K3_change');
+        midiEvents.registerEvent('K4_change');
+        midiEvents.registerEvent('K5_change');
+        midiEvents.registerEvent('K6_change');
+        midiEvents.registerEvent('K7_change');
+        midiEvents.registerEvent('K8_change');
+    }
 
     handlePadChange(e) {
         console.log('handlePadChange', e.name, e.velocity);
