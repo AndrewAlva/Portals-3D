@@ -7,6 +7,7 @@ window.RenderController = {
 
         _this.initRenderer();
         _this.initCompositor();
+        _this.initRTPool();
 
         _this.addHandlers();
         Render.start( _this.loop );
@@ -42,6 +43,18 @@ window.RenderController = {
         World.SCENE.add(World.COMPOSITOR)
     },
 
+    initRTPool: function() {
+        // Create rtPool to handle RT of scenes and 
+        // reduce dependencies across code
+
+        // get
+        // put
+        // resize?
+    },
+
+
+
+    /*/////// Event handlers ///////*/
     addHandlers: function() {
         var _this = this;
         Utils.resizeCallbacks.push(_this.onResize);

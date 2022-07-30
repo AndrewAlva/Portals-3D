@@ -31,6 +31,7 @@ import { Scene11 } from './scenes/scene11/scene11.js';
 import { Scene12 } from './scenes/scene12/scene12.js';
 import { Scene13 } from './scenes/scene13/scene13.js';
 import { Scene14 } from './scenes/scene14/scene14.js';
+import { Scene15 } from './scenes/scene15/scene15.js';
 
 var App = {
     init: async function({ enableVR = false } = {}) {
@@ -82,10 +83,11 @@ var App = {
             Scene7,
             Scene11,
             Scene13,
+            Scene15,
             Scene12,
         ]);
 
-        SceneController.activateScene(Scene12);
+        SceneController.activateScene(Scene15);
         window.SC = SceneController;
 
         /**

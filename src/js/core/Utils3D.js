@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import { BufferGeometry, BufferAttribute } from 'three/build/three.module.js'
 
 (function () {
@@ -42,4 +43,68 @@ import { BufferGeometry, BufferAttribute } from 'three/build/three.module.js'
             gl_FragColor = finalColor;
         }
     `;
+
+    Utils3D.basicVertexShader = `
+        varying vec2 vUv;
+
+        void main()
+        {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            vUv = uv;
+        }
+    `;
+
+    Utils3D.basicColorFragmentShader = `
+        uniform vec3 uColor;
+        uniform float uAlpha;
+        varying vec2 vUv;
+        void main() {
+            float strength = smoothstep(0.15, 0.5, distance( vUv, vec2(.5) ));
+            gl_FragColor = vec4(vec3(strength), uAlpha);
+        }
+    `;
+    
+    Utils3D.basicTextureFragmentShader = `
+        uniform sampler2D tMap;
+        uniform float uAlpha;
+        varying vec2 vUv;
+        void main() {
+            vec4 texture = texture2D(tMap, vUv);
+            gl_FragColor = vec4(texture.rgb, uAlpha);
+        }
+    `;
+
+    Utils3D.getTestShaderMaterial = function( _type = 'image', _config = {} ) {
+        let material;
+        let fragment;
+        let uniforms = {
+            uAlpha: { value: _config.uAlpha || 1 }
+        };
+
+        if (_type == 'image') {
+            let loadingManager =  new THREE.LoadingManager()
+            let textureLoader = new THREE.TextureLoader(loadingManager)
+            let texture1 = textureLoader.load('_assets/uv.jpg')
+
+            uniforms.tMap = { value: texture1 };
+            fragment = Utils3D.basicTextureFragmentShader;
+            
+        } else {
+            uniforms.uColor = { value: new THREE.Color(_config.uColor || '#ffffff') };
+            fragment = Utils3D.basicColorFragmentShader;
+        }
+
+        material = new THREE.ShaderMaterial({
+            vertexShader: Utils3D.basicVertexShader,
+            fragmentShader: fragment,
+            side: _config.side || THREE.FrontSide,
+            transparent: _config.transparent || false,
+            depthTest: _config.depthTest || true,
+            blending: _config.blending, /* i.e. THREE.AdditiveBlending */
+            uniforms
+        });
+
+        return material;
+    }
+
 })();
